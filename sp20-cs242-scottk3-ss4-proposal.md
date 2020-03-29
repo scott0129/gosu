@@ -1,13 +1,15 @@
 # Web Osu
+An online web version of the popular desktop rhythm game, Osu!
+
 ## Motivation
 One of my favorite games is a rhythm game called Osu! However, it's a desktop game and I've
 always felt that it would make a lot of sense for there to be a web version. 
 
 In a sense, there IS a web version, but it's unfortunately a [a bit lackluster](https://www.osu-web.com/)
 ## Technologies, Tools, Style guides
-Since this will be a web game, the typical web stack (Parcel, TypeScript, Prettify)
-GSAP (GreenSock Animation Platform) for fast and fluid animation/movement
-Filesystem storage on the server for downloading/caching the songs
+Since this will be a web game, the typical web stack (Parcel, TypeScript, Prettify)  
+GSAP (GreenSock Animation Platform) for fast and fluid animation/movement  
+Filesystem storage on the server for downloading/caching the songs  
 ## High-level functionalities
 ### Proof of concept
  - Implement a simple clicking game in 3 ways
