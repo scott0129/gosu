@@ -48,18 +48,49 @@ Most of the design inspiration will come from the original OSU game. The menu fo
 And the gameplay looks like this:
 ![osu gameplay](https://i.ppy.sh/6533010aef9b1b2834079d011a3219d1db3f0c38/68747470733a2f2f6f73752e7070792e73682f73732f3130373132343034)
 
-## Schedule
-### Week 1: Proof of concept
- - Implement the essential game (click some circles with timer accuracy) with UI elements using 3 different methods:
-    1. Using Html DOM elements
-    2. Using Pixi.js, a 2d rendering engine
-    3. Using Phaser, a 2d game engine
- - With some insight gained, choose one of the three options that seems to make the most sense.
-### Week 2: Menu and Music Browser
- - Connect to online API and create some menu to be able to browse through online library of songs
- - Parse .osz files to create playable corresponding levels
-### Week 3: Accuracy
- - Have scoring/rhythm/accuracy/sounds comparable to the original desktop game
-### Week 4?: Polish
- - Look good
+## Schedule & Grading
+### Week 1: Proof of concepts
+#### Goal: Try three different implementation methods to see which would best suit the goals of the project.
 
+#### Functional Requirements 
+Each of the three implementations should have the following:
+    - (+2) 2 On-screen circles
+    - (+2) A two larger, concentric circles that slowly closes in
+    - (+1) A sound when the circles are clicked
+
+The three implementation methods:
+    - Implementaion using Html DOM elements
+    - Implementation using Pixi.js, a 2d rendering engine
+    - Implementation using Phaser, a 2d game engine
+
+#### Testing Requirements
+    - (+6) Unit tests for non-UI functions for all 3 implementations (2 pts each)
+    - (+4) A manual testing plan / snapshot tests for UI functions of the ONE implementation 
+selected to be used for the rest of the project.
+
+### Week 2: Menu and Music Browser
+####Goal: Connect to online API and create some menu to be able to browse through online library of songs
+
+#### Functional Requirements 
+- (+4) Menu displays multiple songs and is scrollable
+- (+4) Songs are fetched from an online server/API service, not on the local computer. 
+- (+5) Clicking on a song plays the music, but remains in the menu
+- (+2) Clicking once more opens up the Week 1 portion, with a very simple layout.
+#### Testing Requirements 
+    - (+3) API testing with proper mocking
+        - (-1) If .env file is public
+    - (+7) Manual testing plan / snapshot tests for UI functions
+        - 3 points for menu testing
+        - 4 points for menu -> game transition
+
+### Week 3: Accuracy
+#### Goal: Parse .osz files to create playable corresponding levels
+
+#### Functional Requirements 
+- (+5) Load and play music from the .osz file
+- (+5) Load circle-clicking beatmap from the .osz file
+- (+5) Show something resembling feedback (if the clicks are early/late, etc)
+#### Testing Requirements 
+- (+4) Tests for file parser, creating a corresponding and accurate object representation.
+- (+6) Manual testing plan 
+    - Not 100% sure how much more detailed I can get in the testing plan than "clicking nothing should give you a bad score"
