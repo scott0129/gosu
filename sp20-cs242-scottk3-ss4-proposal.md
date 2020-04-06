@@ -70,7 +70,7 @@ The three implementation methods:
 selected to be used for the rest of the project.
 
 ### Week 2: Menu and Music Browser
-####Goal: Connect to online API and create some menu to be able to browse through online library of songs
+#### Goal: Connect to online API and create some menu to be able to browse through online library of songs.
 
 #### Functional Requirements 
 - (+4) Menu displays multiple songs and is scrollable
@@ -81,8 +81,8 @@ selected to be used for the rest of the project.
 - (+3) API testing with proper mocking
     - (-1) If .env file is public
 - (+7) Manual testing plan / snapshot tests for UI functions
-    - 3 points for menu testing
-    - 4 points for menu -> game transition
+    - (+3) points for menu testing
+    - (+4) points for menu -> game transition tests
 
 ### Week 3: Accuracy
 #### Goal: Parse .osz files to create playable corresponding levels
@@ -94,4 +94,6 @@ selected to be used for the rest of the project.
 #### Testing Requirements 
 - (+4) Tests for file parser, creating a corresponding and accurate object representation.
 - (+6) Manual testing plan 
-    - Not 100% sure how much more detailed I can get in the testing plan than "clicking nothing should give you a bad score"
+    - (+2) detailed information about the environment
+    - (+2) testing menu browsing
+    - (+2) test of the actual gameplay 
