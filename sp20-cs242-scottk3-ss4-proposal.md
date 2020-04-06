@@ -54,18 +54,19 @@ And the gameplay looks like this:
 
 #### Functional Requirements 
 Each of the three implementations should have the following:
-    - (+2) 2 On-screen circles
-    - (+2) A two larger, concentric circles that slowly closes in
-    - (+1) A sound when the circles are clicked
+
+- (+2) 2 On-screen circles
+- (+2) A two larger, concentric circles that slowly closes in
+- (+1) A sound when the circles are clicked
 
 The three implementation methods:
-    - Implementaion using Html DOM elements
-    - Implementation using Pixi.js, a 2d rendering engine
-    - Implementation using Phaser, a 2d game engine
+- Implementaion using Html DOM elements
+- Implementation using Pixi.js, a 2d rendering engine
+- Implementation using Phaser, a 2d game engine
 
 #### Testing Requirements
-    - (+6) Unit tests for non-UI functions for all 3 implementations (2 pts each)
-    - (+4) A manual testing plan / snapshot tests for UI functions of the ONE implementation 
+- (+6) Unit tests for non-UI functions for all 3 implementations (2 pts each)
+- (+4) A manual testing plan / snapshot tests for UI functions of the ONE implementation 
 selected to be used for the rest of the project.
 
 ### Week 2: Menu and Music Browser
@@ -77,11 +78,11 @@ selected to be used for the rest of the project.
 - (+5) Clicking on a song plays the music, but remains in the menu
 - (+2) Clicking once more opens up the Week 1 portion, with a very simple layout.
 #### Testing Requirements 
-    - (+3) API testing with proper mocking
-        - (-1) If .env file is public
-    - (+7) Manual testing plan / snapshot tests for UI functions
-        - 3 points for menu testing
-        - 4 points for menu -> game transition
+- (+3) API testing with proper mocking
+    - (-1) If .env file is public
+- (+7) Manual testing plan / snapshot tests for UI functions
+    - 3 points for menu testing
+    - 4 points for menu -> game transition
 
 ### Week 3: Accuracy
 #### Goal: Parse .osz files to create playable corresponding levels
