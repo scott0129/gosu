@@ -1,42 +1,31 @@
 class Game {
-    constructor() {
-        let gameElements = [];
+    constructor(audio) {
+        this.gameElements = [];
 
         this.$game = document.createElement('div');
         this.$game.classList.add('game');
 
-        this.b1 = new BeatCircle(100, 200);
-        this.b1.mount(this.$game);
+        this.audio = audio;
 
         this.mouseX = 0;
         this.mouseY = 0;
     }
 
     update(deltaMs) {
-        this.b1.update(deltaMs);
+        for (let i = 0; i < this.gameElements.length; i++) {
+            this.gameElements[i].update(deltaMs);
+        }
+    }
+
+    addCircle(x, y) {
+        let newCircle = new BeatCircle(x, y, this.audio);
+        newCircle.mount(this.$game);
+        this.gameElements.push(newCircle);
     }
 
     mount($root) {
         $root.appendChild(this.$game);
-
-        window.addEventListener('keydown', (e) => this.onKeyDown(e) );
-        $root.addEventListener('mousemove', (e) => this.onMouseMove(e) );
     }
-
-    onKeyDown(event) {
-        if (event.code === "KeyZ" || event.code === "KeyX") {
-            console.log("rightKey!");
-            event.preventDefault();
-            console.log(document.elementFromPoint(this.mouseX, this.mouseY));
-            document.elementFromPoint(this.mouseX, this.mouseY).click();
-        }
-    }
-
-    onMouseMove(event) {
-        this.mouseX = event.clientX;
-        this.mouseY = event.clientY;
-    }
-
 }
 
 class BeatCircle {
@@ -44,7 +33,8 @@ class BeatCircle {
         return 'translate(' + a + ', ' + b + ')';
     }
 
-    constructor(x, y) {
+    constructor(x, y, audio) {
+        this.audio = audio;
         this.MAX_WIDTH = 500;
 
         this.ticking = false;
@@ -62,23 +52,27 @@ class BeatCircle {
         this.$timingCircle.classList.add('timing_circle');
 
         this.startTime = Date.now();
-        this.duration = 5000;
+        this.duration = 2000;
         this.setTimingRadius(this.MAX_WIDTH);
 
         this.$el = document.createElement('div');
         this.$el.appendChild(this.$timingCircle);
         this.$el.appendChild(this.$clickableArea);
 
-        this.$el.style.transform = this.translate(150 + 'px', '250px');
+        this.$el.style.transform = this.translate(x + 'px', y + 'px');
 
         this.$beatCircle = document.createElement('div');
         this.$beatCircle.appendChild(this.$el);
 
-        this.$clickableArea.addEventListener('mousedown', this.onClick);
+        this.$clickableArea.addEventListener('mousedown', () => this.onClick() );
     }
 
     onClick() {
-        console.log("hi! i'm ", this);
+        if (this.audio.paused) {
+            this.audio.play();
+        } else {
+            this.audio.currentTime = 0
+        }
     }
 
     update(deltaMs) {
@@ -110,5 +104,8 @@ window.onload = () => {
     game.mount($container);
 };
 
-let game = new Game();
+let audio = document.getElementById('hitsound'); 
+let game = new Game(audio);
+game.addCircle(200, 200);
+window.setTimeout( () => { game.addCircle(500, 500); } , 1000);
 window.setInterval( () =>{ game.update(); }, 20);
