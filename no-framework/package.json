@@ -1,0 +1,11 @@
+{
+  "name": "no-framework",
+  "version": "1.0.0",
+  "description": "No framework implementation of simple clicking game",
+  "main": "index.js",
+  "author": "Scott Kim",
+  "license": "MIT",
+  "devDependencies": {
+    "prettier": "2.0.4"
+  }
+}
