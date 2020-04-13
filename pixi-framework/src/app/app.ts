@@ -14,6 +14,7 @@ const currentSound: keyof SoundEffects = "softHitclap";
 
 export class GameApp {
     private app: PIXI.Application;
+    private gameElements: HitCircle[];
 
     constructor(parent: HTMLElement, width: number, height: number) {
         this.app = new PIXI.Application({
@@ -24,6 +25,8 @@ export class GameApp {
             backgroundColor: 0x777777
         });
         parent.replaceChild(this.app.view, parent.lastElementChild); // Hack for parcel HMR
+
+        this.gameElements = [];
 
         // init Pixi loader
         let loader = new PIXI.Loader();
@@ -39,44 +42,93 @@ export class GameApp {
     }
 
     private onAssetsLoaded(loader, resources) {
-        let hitCircle = new HitCircle(500, 250, resources[currentSound]);
+        this.addCircle(500, 250, resources[currentSound]);
+        setTimeout(() => this.addCircle(800, 400, resources[currentSound]), 1000);
+    }
+    
+    private addCircle(x, y, hitSound) {
+        let hitCircle = new HitCircle(x, y, hitSound);
         hitCircle.mount(this.app.stage);
+        this.gameElements.push(hitCircle);
+        requestAnimationFrame(() => this.tick());
+    }
+
+    private tick() {
+        for (let i = 0; i < this.gameElements.length; ++i) {
+            this.gameElements[i].update();
+        }
+        requestAnimationFrame(() => this.tick());
     }
 }
 
 class HitCircle {
     private x: number;
     private y: number;
-    private duration: number;
     private hitSound: PIXI.LoaderResource;
-    private graphics: PIXI.Graphics;
+    private rootGraphic: PIXI.Graphics;
+    private hitGraphic: PIXI.Graphics;
+    private timingGraphic: PIXI.Graphics;
+    private startTime: number;
 
-    readonly MAX_TIMING_RADIUS: number = 100;
+    readonly MAX_TIMING_RADIUS: number = 300;
     readonly HIT_RADIUS: number = 65;
-    readonly DURATION_MS: number = 1000;
+    readonly DURATION_MS: number = 2000;
 
     constructor(x, y, hitSound) {
         this.hitSound = hitSound;
-        const hitCircle: PIXI.Circle = new PIXI.Circle(600, 250, this.HIT_RADIUS);
+        this.startTime = Date.now();
+        this.x = x;
+        this.y = y;
+
+        const hitCircle = new PIXI.Circle(600, 250, this.HIT_RADIUS);
 
         hitCircle.x = x;
         hitCircle.y = y;
 
-        this.graphics = new PIXI.Graphics();
+        this.hitGraphic = new PIXI.Graphics();
 
-        this.graphics.lineStyle(2, 0xffffff, 1);
-        this.graphics.beginFill(0xaabbee, 1);
-        this.graphics.drawShape(hitCircle);
-        this.graphics.endFill();
+        this.hitGraphic.lineStyle(10, 0xffffff, 1);
+        this.hitGraphic.beginFill(0x112288, 1);
+        this.hitGraphic.drawShape(hitCircle);
+        this.hitGraphic.endFill();
 
-        this.graphics.interactive = true;
-        this.graphics.buttonMode = true;
+        this.hitGraphic.interactive = true;
+        this.hitGraphic.buttonMode = true;
 
-        this.graphics.on("pointerdown", () => this.onClick());
+
+
+        this.timingGraphic = new PIXI.Graphics();
+
+        this.timingGraphic.lineStyle(10, 0xabcede, 1);
+        this.timingGraphic.drawShape(this.getTimingCircle(0.0));
+        this.timingGraphic.endFill();
+
+        this.rootGraphic = new PIXI.Graphics();
+
+        this.rootGraphic.addChild(this.timingGraphic);
+        this.rootGraphic.addChild(this.hitGraphic);
+
+        this.hitGraphic.on("pointerdown", () => this.onClick());
+    }
+
+    update() {
+        const progress = (Date.now() - this.startTime) / this.DURATION_MS
+        this.timingGraphic.clear();
+        this.timingGraphic.lineStyle(10, 0xabcede, 1);
+        this.timingGraphic.drawShape(this.getTimingCircle(progress));
+        this.timingGraphic.endFill();
     }
 
     mount(stage) {
-        stage.addChild(this.graphics);
+        stage.addChild(this.rootGraphic);
+    }
+
+    private getTimingCircle(progress: number): PIXI.Circle {
+        const radius = (1 - progress) * this.MAX_TIMING_RADIUS + this.HIT_RADIUS;
+        const timingCircle = new PIXI.Circle(600, 250, radius);
+        timingCircle.x = this.x;
+        timingCircle.y = this.y;
+        return timingCircle;
     }
 
     private onClick() {
