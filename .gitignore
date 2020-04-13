@@ -1,6 +1,11 @@
 # OSX
 #
 .DS_Store
+Thumbs.db
+Desktop.ini
+
+# Yarn files
+.cache
 
 # Confidential things
 .env
@@ -25,10 +30,25 @@ DerivedData
 *.ipa
 *.xcuserstate
 
+# Sublime Text files
+*.sublime*
+*.*~*.TMP
+
+# local pixijs and plugins
+dist
+
+# Tool temp files
+*.sw*
+*~
+\#*#
+
+# VS Code
+.vscode
+
 # Android/IntelliJ
 #
 build/
-.idea
+idea
 .gradle
 local.properties
 *.iml
