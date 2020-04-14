@@ -4,7 +4,7 @@ import playScene from './playScene';
 import menuScene from './menuScene';
 import endScene from './endScene';
 
-export default {
+const gameConfig: Phaser.Types.Core.GameConfig = {
   type: Phaser.AUTO,
   width: 800,
   height: 600,
@@ -14,3 +14,5 @@ export default {
   banner: { text: 'white', background: ['#FD7400', '#FFE11A', '#BEDB39', '#1F8A70', '#004358'] },
   scene: [bootScene, menuScene, playScene, endScene]
 };
+
+export default gameConfig;
