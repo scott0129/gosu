@@ -1,19 +1,18 @@
 import Phaser from 'phaser';
-import gameConfig from './app/gameConfig.ts';
+import gameConfig from './app/gameConfig';
 
-function newGame () {
+let game: Phaser.Game;
+
+function newGame(): void {
   if (game) return;
   game = new Phaser.Game(gameConfig);
 }
 
-function destroyGame () {
+function destroyGame(): void {
   if (!game) return;
   game.destroy(true);
-  game.runDestroy();
   game = null;
 }
-
-let game;
 
 if (module.hot) {
   module.hot.dispose(destroyGame);
