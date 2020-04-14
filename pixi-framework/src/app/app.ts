@@ -44,13 +44,13 @@ export class GameApp {
     private onAssetsLoaded(loader, resources) {
         this.addCircle(500, 250, resources[currentSound]);
         setTimeout(() => this.addCircle(800, 400, resources[currentSound]), 1000);
+        requestAnimationFrame(() => this.tick());
     }
     
     private addCircle(x, y, hitSound) {
         let hitCircle = new HitCircle(x, y, hitSound);
         hitCircle.mount(this.app.stage);
         this.gameElements.push(hitCircle);
-        requestAnimationFrame(() => this.tick());
     }
 
     private tick() {

@@ -10,6 +10,8 @@ export default {
     this.load.image('ground', require('../assets/platform.png'));
     this.load.image('star', require('../assets/star.png'));
     this.load.image('bomb', require('../assets/bomb.png'));
+    this.load.audio('softHitclap', require('../assets/audio/soft-hitclap.wav'));
+
     this.load.spritesheet('dude', require('../assets/dude.png'), { frameWidth: 32, frameHeight: 48 });
 
     this.load.on('progress', function (progress) {
