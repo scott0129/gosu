@@ -12,7 +12,7 @@ const gameSounds: SoundEffects = soundEffects;
 // IMPORTANT: Change this value in order to see the Hot Module Reloading!
 const currentSound: keyof SoundEffects = "softHitclap";
 
-export class GameApp {
+class GameApp {
     private app: PIXI.Application;
     private gameElements: HitCircle[];
 
@@ -21,6 +21,7 @@ export class GameApp {
             width,
             height,
             resolution: window.devicePixelRatio,
+            // @ts-ignore: Syntax error
             autoResize: true,
             backgroundColor: 0x777777
         });
@@ -123,7 +124,7 @@ class HitCircle {
         stage.addChild(this.rootGraphic);
     }
 
-    private getTimingCircle(progress: number): PIXI.Circle {
+    getTimingCircle(progress: number): PIXI.Circle {
         const radius = (1 - progress) * this.MAX_TIMING_RADIUS + this.HIT_RADIUS;
         const timingCircle = new PIXI.Circle(600, 250, radius);
         timingCircle.x = this.x;
@@ -135,3 +136,5 @@ class HitCircle {
         this.hitSound.sound.play();
     }
 }
+
+export { GameApp, HitCircle };
