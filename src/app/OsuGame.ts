@@ -1,8 +1,8 @@
 import Phaser from 'phaser';
-import bootScene from './app/bootScene';
-import playScene from './app/playScene';
-import menuScene from './app/menuScene';
-import endScene from './app/endScene';
+import bootScene from './bootScene';
+import playScene from './playScene';
+import menuScene from './menuScene';
+import endScene from './endScene';
 
 class OsuGame {
     private game: Phaser.Game;

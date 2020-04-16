@@ -1,7 +1,7 @@
 import Vue from 'vue';
-import MainPage from './components/MainPage';
+import Root from './components/Root';
 
 new Vue({
-    el: '#mainpage',
-    render: (h) => h(MainPage),
+    el: '#root',
+    render: (h) => h(Root),
 });

@@ -10,10 +10,10 @@
 
 <script lang="ts">
 import MusicDirectory from './MusicDirectory';
-import Game from './Game';
+import OsuGameVue from './OsuGameVue';
 
 export default {
-    name: 'MainPage',
+    name: 'Root',
     components: {
         MusicDirectory,
     },
@@ -23,8 +23,8 @@ export default {
         };
     },
     methods: {
-        startGame: function() {
-            this.currentComponent = Game;
+        startGame: function () {
+            this.currentComponent = OsuGameVue;
         },
     },
 };

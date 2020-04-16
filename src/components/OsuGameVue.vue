@@ -3,13 +3,13 @@
 </template>
 
 <script lang="ts">
-import OsuGame from '../app';
+import OsuGame from '../app/OsuGame';
 export default {
-    name: 'Game',
+    name: 'OsuGameVue',
     data() {
         return {
             game: null,
-        }
+        };
     },
     mounted() {
         this.game = new OsuGame('game-area');
