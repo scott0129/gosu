@@ -6,13 +6,9 @@ export default {
     var bg = this.add.rectangle(400, 300, 400, 30, 0x666666);
     var bar = this.add.rectangle(bg.x, bg.y, bg.width, bg.height, 0xffffff).setScale(0, 1);
 
-    this.load.image('sky', require('../assets/sky.png'));
-    this.load.image('ground', require('../assets/platform.png'));
-    this.load.image('star', require('../assets/star.png'));
-    this.load.image('bomb', require('../assets/bomb.png'));
-    this.load.audio('softHitclap', require('../assets/audio/soft-hitclap.wav'));
-
-    this.load.spritesheet('dude', require('../assets/dude.png'), { frameWidth: 32, frameHeight: 48 });
+    this.load.image('sky', require('../../assets/sky.png'));
+    this.load.image('star', require('../../assets/star.png'));
+    this.load.audio('softHitclap', require('../../assets/audio/soft-hitclap.wav'));
 
     this.load.on('progress', function (progress) {
       bar.setScale(progress, 1);
