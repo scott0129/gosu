@@ -1,0 +1,16 @@
+{
+  "name": "WebOSU-Server",
+  "version": "1.0.0",
+  "description": "Server for the WebOSU project",
+  "main": "index.js",
+  "scripts": {
+      "start": "node src/index.js"
+  },
+  "repository": "https://gitlab.engr.illinois.edu/scottk3/sp20-cs242-project",
+  "author": "Scott Kim",
+  "license": "MIT",
+  "private": true,
+  "dependencies": {
+    "express": "^4.17.1"
+  }
+}
