@@ -8,7 +8,11 @@ const env = require('./.env');
 const session = require('express-session');
 const Bearer = require('passport-http-bearer');
 const axios = require('axios');
+const MongoClient = require('mongodb').MongoClient;
 
+// const client = new MongoClient(env.ATLAS_URI, { useNewUrlParser: true, useUnifiedTopology: true });
+// client.connect(err => {
+// });
 
 
 const app = express();
@@ -31,13 +35,17 @@ passport.use('osu-provider', new OAuth2Strategy({
     clientID: env.CLIENT_ID,
     clientSecret: env.CLIENT_SECRET,
     callbackURL: 'http://localhost:4000/login/callback',
+    scope: 'identify users.read friends.read',
     state: true,
 },
     function(accessToken, refreshToken, profile, done) {
         const accessString = 'Bearer ' + accessToken;
-        axios.get('https://osu.ppy.sh/api/v2/me', {
+        axios.get('https://osu.ppy.sh/api/v2/users/3842410/beatmapsets/most_played', {
             headers: {
                 'Authorization': accessString,
+            },
+            data: {
+                'limit': 20,
             }
         })
             .then( (response) => {
@@ -87,7 +95,6 @@ app.get('/login/callback',
 app.get('/logged',
     function(req, res) {
         console.log("at login/callback!");
-        console.log("AAAAAAAAAAAAAAAAAAAAAAAAAAAarequest:");
         // console.log("BBBBBBBBBBBBBBBBBBBBBBBBBBBBesult:");
         // console.log(res._passport);
         res.send('<span style="white-space: pre-wrap">'+JSON.stringify(user, '<br>', 4)+'</span>');
