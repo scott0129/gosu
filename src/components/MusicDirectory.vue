@@ -1,12 +1,18 @@
 <template>
     <div class="container">
         <h1>{{ message }}</h1>
+        <button @click.prevent="connect">Connect to Osu</button>
     </div>
 </template>
 
 <script lang="ts">
 export default {
     name: 'MusicDirectory',
+    methods: {
+        connect: function() {
+            console.log("hi!");
+        }
+    },
     data() {
         return {
             message:
