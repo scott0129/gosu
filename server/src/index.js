@@ -9,6 +9,9 @@ const session = require('express-session');
 const axios = require('axios');
 const MongoClient = require('mongodb').MongoClient;
 
+const STATIC_DIR = '../client/dist'
+
+
 const client = new MongoClient(env.ATLAS_URI, { useNewUrlParser: true, useUnifiedTopology: true });
 
 let users = null;
@@ -23,6 +26,19 @@ client.connect(err => {
 
 const app = express();
 
+
+function attachCookie(url) {
+    return function(req, res, next) {
+        if (req.url == url && req.session && req.session.user) {
+            console.log("attached cookie!");
+            console.log(JSON.stringify(req.session.user.value.beatmaps).length);
+            res.cookie('beatmaps', JSON.stringify(req.session.user.value.beatmaps));
+        }
+        next();
+    }
+}
+
+
 app.use(morgan('tiny'));
 app.use(cors());
 app.use(bodyParser.json());
@@ -33,6 +49,9 @@ app.use(session({ secret: env.SESSION_SECRET,
                   saveUninitialized: false,})
 );
 
+app.use(attachCookie('/'));
+app.use(express.static(STATIC_DIR));
+
 
 passport.use('osu-provider', new OAuth2Strategy({
     authorizationURL: 'https://osu.ppy.sh/oauth/authorize',
@@ -40,7 +59,7 @@ passport.use('osu-provider', new OAuth2Strategy({
     clientID: env.CLIENT_ID,
     clientSecret: env.CLIENT_SECRET,
     callbackURL: 'http://localhost:4000/login/callback',
-    scope: 'identify',
+    scope: 'identify users.read',
     state: true,
 },
     function(accessToken, refreshToken, profile, done) {
@@ -49,16 +68,41 @@ passport.use('osu-provider', new OAuth2Strategy({
             headers: {
                 'Authorization': accessString,
             },
-            data: {
-                'limit': 20,
-            }
         })
             .then( (response) => {
                 const data = response.data;
-                console.log(data);
+                console.log("id is: ", data.id);
+                return axios.get(`https://osu.ppy.sh/api/v2/users/${data.id}/beatmapsets/most_played`, {
+                    headers: {
+                        'Authorization': accessString,
+                    },
+                    data: {
+                        'limit': 5,
+                        'username': response.data.username// This isn't necessary for the API but we read it when we get the response with JSON.parse
+                    }
+                })
+            })
+            .then( (response) => {
+                let beatmapsList = response.data.map(
+                    ({ beatmap_id, 
+                        beatmap,
+                        beatmapset,
+                    }) => ({ 
+                        beatmap_id: beatmap_id,
+                        version: beatmap.version,
+                        set_id: beatmapset.id,
+                        title: beatmapset.title,
+                        artist: beatmapset.artist,
+                        preview_url: beatmapset.preview_url,
+                    })
+                );
+
                 users.findOneAndUpdate(
-                    { _id: data.username },
-                    {  $set: { token: accessToken } },
+                    { _id: JSON.parse(response.config.data).username },
+                    {  $set: { 
+                        token: accessToken,
+                        beatmaps: beatmapsList,
+                    } },
                     { 
                         new: true,   // return new doc if one is upserted
                         upsert: true // insert the document if it does not exist 
@@ -66,8 +110,7 @@ passport.use('osu-provider', new OAuth2Strategy({
                     , (err, doc) => done(err, doc));
             })
             .catch( (error) => {
-                console.log('ERROR!');
-                console.log(error);
+                console.error('ERROR in making API calls!', error);
                 done(error, null);
             })
     }
@@ -81,8 +124,6 @@ passport.deserializeUser(function(user, done) {
     done(null, user);
 });
 
-
-app.use('/', express.static('../client/dist'))
 
 
 
@@ -100,7 +141,12 @@ app.get('/login/callback',
     function(req, res) {
         // If this function gets called, authentication was successful.
         // `req.user` contains the authenticated user.
-        res.send('<span style="white-space: pre-wrap">'+JSON.stringify(req.user, '<br>', 4)+'</span>');
+        req.session.user = req.user;
+
+        res.redirect('/');
+        // res.set('location', '/logged');
+        // res.status(302).json(req.session.user);
+        // res.send('<span style="white-space: pre-wrap">'+JSON.stringify(req.user, '<br>', 4)+'</span>');
     });
 
 app.get('/logged',
