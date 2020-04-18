@@ -1,0 +1,43 @@
+<template>
+    <div v-on:click="togglePlay" class="beatmap-row">
+        <h1>{{ title }}</h1>
+        <h4>{{ artist }}</h4>
+        <div class="audio-player"></div>
+    </div>
+</template>
+
+<script lang="ts">
+export default {
+    name: 'BeatmapCard',
+    data() {
+        return {
+            audio: new Audio(this.previewUrl),
+        };
+    },
+    methods: {
+        togglePlay: function (): void {
+            if (this.audio.paused) {
+                this.audio.play();
+            } else {
+                this.audio.pause();
+            }
+        },
+    },
+    props: {
+        beatmapId: Number,
+        version: String,
+        setId: Number,
+        title: String,
+        artist: String,
+        previewUrl: String,
+    },
+};
+</script>
+
+<style scoped>
+.container {
+    width: 600px;
+    margin: 50px auto;
+    text-align: center;
+}
+</style>
