@@ -6,18 +6,22 @@ const passport = require('passport');
 const OAuth2Strategy = require('passport-oauth').OAuth2Strategy;
 const env = require('./.env');
 const session = require('express-session');
-const Bearer = require('passport-http-bearer');
 const axios = require('axios');
 const MongoClient = require('mongodb').MongoClient;
 
-// const client = new MongoClient(env.ATLAS_URI, { useNewUrlParser: true, useUnifiedTopology: true });
-// client.connect(err => {
-// });
+const client = new MongoClient(env.ATLAS_URI, { useNewUrlParser: true, useUnifiedTopology: true });
+
+let users = null;
+
+client.connect(err => {
+    if (err) {
+        console.log('Could not connect to mongoDB:', 'err');
+    }
+    users = client.db("gosuAuth").collection("users");
+});
 
 
 const app = express();
-
-let user = null;
 
 app.use(morgan('tiny'));
 app.use(cors());
@@ -29,18 +33,19 @@ app.use(session({ secret: env.SESSION_SECRET,
                   saveUninitialized: false,})
 );
 
+
 passport.use('osu-provider', new OAuth2Strategy({
     authorizationURL: 'https://osu.ppy.sh/oauth/authorize',
     tokenURL: 'https://osu.ppy.sh/oauth/token',
     clientID: env.CLIENT_ID,
     clientSecret: env.CLIENT_SECRET,
     callbackURL: 'http://localhost:4000/login/callback',
-    scope: 'identify users.read friends.read',
+    scope: 'identify',
     state: true,
 },
     function(accessToken, refreshToken, profile, done) {
         const accessString = 'Bearer ' + accessToken;
-        axios.get('https://osu.ppy.sh/api/v2/users/3842410/beatmapsets/most_played', {
+        axios.get('https://osu.ppy.sh/api/v2/me', {
             headers: {
                 'Authorization': accessString,
             },
@@ -51,11 +56,14 @@ passport.use('osu-provider', new OAuth2Strategy({
             .then( (response) => {
                 const data = response.data;
                 console.log(data);
-                user = response.data
-                done(null, {
-                    user: data.username,
-                    data: data.data,
-                });
+                users.findOneAndUpdate(
+                    { _id: data.username },
+                    {  $set: { token: accessToken } },
+                    { 
+                        new: true,   // return new doc if one is upserted
+                        upsert: true // insert the document if it does not exist 
+                    }
+                    , (err, doc) => done(err, doc));
             })
             .catch( (error) => {
                 console.log('ERROR!');
@@ -88,18 +96,35 @@ app.get('/login',
     });
 
 app.get('/login/callback',
-    passport.authenticate('osu-provider', { successRedirect: '/logged', 
-                                            failureRedirect: '/failed-login' })
-);
+    passport.authenticate('osu-provider', { failureRedirect: '/failed-login' }),
+    function(req, res) {
+        // If this function gets called, authentication was successful.
+        // `req.user` contains the authenticated user.
+        res.send('<span style="white-space: pre-wrap">'+JSON.stringify(req.user, '<br>', 4)+'</span>');
+    });
 
 app.get('/logged',
     function(req, res) {
-        console.log("at login/callback!");
-        // console.log("BBBBBBBBBBBBBBBBBBBBBBBBBBBBesult:");
-        // console.log(res._passport);
-        res.send('<span style="white-space: pre-wrap">'+JSON.stringify(user, '<br>', 4)+'</span>');
+        res.send('<a href="/api/me"> click here! </a>');
     }
 )
+
+app.get('/api/me',
+    passport.authenticate('osu-provider'),
+    function(req, res) {
+        console.log("at login/callback!");
+        res.json(req.user);
+    });
+
+// app.get('/me',
+//     passport.authenticate('bearer'),
+//     function(req, res) {
+//         console.log("at login/callback!");
+//         // console.log("BBBBBBBBBBBBBBBBBBBBBBBBBBBBesult:");
+//         // console.log(res._passport);
+//         res.send('<span style="white-space: pre-wrap">'+JSON.stringify(req.user, '<br>', 4)+'</span>');
+//     }
+// )
 
 const port = process.env.PORT || 4000;
 app.listen(port, () => {
