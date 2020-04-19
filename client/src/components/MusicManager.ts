@@ -21,11 +21,7 @@ class MusicManager {
         );
     }
 
-    getSelectCallback(): Function {
-        return this.select.bind(this);
-    }
-
-    select(songId: string): void {
+    select(songId: number): void {
         const songUrl = this.getBeatmapFromId(songId).preview_url;
         if (songUrl === this.currentlySelected) {
             this.audioElement.pause();

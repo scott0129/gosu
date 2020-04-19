@@ -1,5 +1,5 @@
 <template>
-    <div v-on:click.stop="selectionCallback(beatmapId)" class="beatmap-card">
+    <div class="beatmap-card">
         <h1 class="beatmap-title">{{ title }}</h1>
         <h4 class="beatmap-artist">{{ artist }}</h4>
         <div class="audio-player"></div>
@@ -16,7 +16,6 @@ export default {
         title: String,
         artist: String,
         previewUrl: String,
-        selectionCallback: Function,
     },
 };
 </script>

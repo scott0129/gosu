@@ -9,7 +9,7 @@
             v-bind:title="beatmap.title"
             v-bind:artist="beatmap.artist"
             v-bind:previewUrl="beatmap.preview_url"
-            v-bind:selectionCallback="manager.getSelectCallback()"
+            v-on:click.native.stop="manager.select(beatmap.beatmap_id)"
         ></BeatmapCard>
     </div>
 </template>
@@ -26,6 +26,11 @@ export default {
             audio: new Audio('https://b.ppy.sh/preview/675615.mp3'),
             manager: new MusicManager(this.beatmaps, this.selectionCallback),
         };
+    },
+    methods: {
+        printCall(): void {
+            console.log("HELLO I GOT CLICKED");
+        }
     },
     components: {
         BeatmapCard,
