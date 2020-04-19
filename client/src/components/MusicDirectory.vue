@@ -9,19 +9,22 @@
             v-bind:title="beatmap.title"
             v-bind:artist="beatmap.artist"
             v-bind:previewUrl="beatmap.preview_url"
-            v-bind:selectionCallback="selectionCallback"
+            v-bind:selectionCallback="manager.getSelectCallback()"
         ></BeatmapCard>
     </div>
 </template>
 
 <script lang="ts">
 import BeatmapCard from './BeatmapCard';
+import MusicManager from './MusicManager';
+
 export default {
     name: 'MusicDirectory',
-    data() {
+    data(): Record<string, any> {
         return {
             paused: true,
             audio: new Audio('https://b.ppy.sh/preview/675615.mp3'),
+            manager: new MusicManager(this.beatmaps, this.selectionCallback),
         };
     },
     components: {

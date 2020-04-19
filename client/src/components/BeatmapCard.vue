@@ -1,32 +1,14 @@
 <template>
-    <div v-on:click="selectionCallback(beatmapId)" class="beatmap-card">
+    <div v-on:click.stop="selectionCallback(beatmapId)" class="beatmap-card">
         <h1 class="beatmap-title">{{ title }}</h1>
         <h4 class="beatmap-artist">{{ artist }}</h4>
         <div class="audio-player"></div>
-        <button v-on:click.stop="togglePlay">
-            Preview music
-        </button>
     </div>
 </template>
 
 <script lang="ts">
 export default {
     name: 'BeatmapCard',
-    data() {
-        return {
-            audio: new Audio(this.previewUrl),
-        };
-    },
-    methods: {
-        togglePlay: function (): void {
-            if (this.audio.paused) {
-                this.audio.currentTime = 0;
-                this.audio.play();
-            } else {
-                this.audio.pause();
-            }
-        },
-    },
     props: {
         beatmapId: Number,
         version: String,
