@@ -12,32 +12,23 @@ const MongoClient = require('mongodb').MongoClient;
 const STATIC_DIR = '../client/dist'
 
 
+// setup ===========================================================================================
+
 const client = new MongoClient(env.ATLAS_URI, { useNewUrlParser: true, useUnifiedTopology: true });
 
-let users = null;
 
+let users = null;
 client.connect(err => {
     if (err) {
         console.log('Could not connect to mongoDB:', 'err');
     }
     users = client.db("gosuAuth").collection("users");
+    
+    startServer();
 });
 
 
 const app = express();
-
-
-function attachCookie(url) {
-    return function(req, res, next) {
-        if (req.url == url && req.session && req.session.user) {
-            console.log("attached cookie!");
-            console.log(JSON.stringify(req.session.user.value.beatmaps).length);
-            res.cookie('beatmaps', JSON.stringify(req.session.user.value.beatmaps));
-        }
-        next();
-    }
-}
-
 
 app.use(morgan('tiny'));
 app.use(cors());
@@ -46,12 +37,9 @@ app.use(passport.initialize());
 app.use(passport.session());
 app.use(session({ secret: env.SESSION_SECRET,
                   resave: false,
-                  saveUninitialized: false,})
-);
-
+                  saveUninitialized: false,}));
 app.use(attachCookie('/'));
 app.use(express.static(STATIC_DIR));
-
 
 passport.use('osu-provider', new OAuth2Strategy({
     authorizationURL: 'https://osu.ppy.sh/oauth/authorize',
@@ -63,56 +51,13 @@ passport.use('osu-provider', new OAuth2Strategy({
     state: true,
 },
     function(accessToken, refreshToken, profile, done) {
-        const accessString = 'Bearer ' + accessToken;
-        axios.get('https://osu.ppy.sh/api/v2/me', {
-            headers: {
-                'Authorization': accessString,
-            },
-        })
-            .then( (response) => {
-                const data = response.data;
-                console.log("id is: ", data.id);
-                return axios.get(`https://osu.ppy.sh/api/v2/users/${data.id}/beatmapsets/most_played`, {
-                    headers: {
-                        'Authorization': accessString,
-                    },
-                    data: {
-                        'limit': 10,
-                        'username': response.data.username// This isn't necessary for the API but we read it when we get the response with JSON.parse
-                    }
+            fetchUserInfo(accessToken)
+                .then( updateDatabase )
+                .then( (doc) => done(null, doc))
+                .catch( (error) => {
+                    console.error('ERROR in making API calls!', error);
+                    done(error, null);
                 })
-            })
-            .then( (response) => {
-                let beatmapsList = response.data.map(
-                    ({ beatmap_id, 
-                        beatmap,
-                        beatmapset,
-                    }) => ({ 
-                        beatmap_id: beatmap_id,
-                        version: beatmap.version,
-                        set_id: beatmapset.id,
-                        title: beatmapset.title,
-                        artist: beatmapset.artist,
-                        preview_url: beatmapset.preview_url,
-                    })
-                );
-
-                users.findOneAndUpdate(
-                    { _id: JSON.parse(response.config.data).username },
-                    {  $set: { 
-                        token: accessToken,
-                        beatmaps: beatmapsList,
-                    } },
-                    { 
-                        new: true,   // return new doc if one is upserted
-                        upsert: true // insert the document if it does not exist 
-                    }
-                    , (err, doc) => done(err, doc));
-            })
-            .catch( (error) => {
-                console.error('ERROR in making API calls!', error);
-                done(error, null);
-            })
     }
 ));
 
@@ -126,6 +71,83 @@ passport.deserializeUser(function(user, done) {
 
 
 
+function startServer() {
+    const port = process.env.PORT || 4000;
+    app.listen(port, () => {
+        console.log(`listening on ${port}`);
+    });
+}
+
+function attachCookie(url) {
+    return function(req, res, next) {
+        if (req.url == url && req.session && req.session.user) {
+            console.log("attached cookie!");
+            console.log(JSON.stringify(req.session.user.value.beatmaps).length);
+            res.cookie('beatmaps', JSON.stringify(req.session.user.value.beatmaps));
+        }
+        next();
+    }
+}
+
+
+function fetchUserInfo(accessToken) {
+    return axios.get('https://osu.ppy.sh/api/v2/me', {
+        headers: {
+            'Authorization': 'Bearer ' + accessToken,
+        },
+    })
+    .then( (response) => {
+        const data = response.data;
+        return axios.get(`https://osu.ppy.sh/api/v2/users/${data.id}/beatmapsets/most_played`, {
+            headers: {
+                'Authorization': 'Bearer ' + accessToken,
+            },
+            data: {
+                'limit': 10,
+                'username': response.data.username// This isn't necessary for the API but we read it when we get the response with JSON.parse
+            }
+        })
+    })
+}
+
+function extractBeatmapsInfo(rawData) {
+    let beatmapsList = rawData.map(
+        ({ beatmap_id, 
+            beatmap,
+            beatmapset,
+        }) => ({ 
+            beatmap_id: beatmap_id,
+            version: beatmap.version,
+            set_id: beatmapset.id,
+            title: beatmapset.title,
+            artist: beatmapset.artist,
+            preview_url: beatmapset.preview_url,
+        })
+    );
+    return beatmapsList
+}
+
+function updateDatabase(apiResponse) {
+    let beatmapsList = extractBeatmapsInfo(apiResponse.data);
+    let accessToken = apiResponse.config.headers.Authorization.split(' ')[1];
+
+    return users.findOneAndUpdate(
+    { _id: JSON.parse(apiResponse.config.data).username },
+    {  $set: { 
+        token: accessToken,
+        beatmaps: beatmapsList,
+    } },
+    { 
+        new: true,   // return new doc if one is upserted
+        upsert: true // insert the document if it does not exist 
+    })
+}
+
+
+
+
+
+// Routes ==========================================================================================
 
 app.get('/login',
     passport.authenticate('osu-provider'),
@@ -154,25 +176,3 @@ app.get('/logged',
         res.send('<a href="/api/me"> click here! </a>');
     }
 )
-
-app.get('/api/me',
-    passport.authenticate('osu-provider'),
-    function(req, res) {
-        console.log("at login/callback!");
-        res.json(req.user);
-    });
-
-// app.get('/me',
-//     passport.authenticate('bearer'),
-//     function(req, res) {
-//         console.log("at login/callback!");
-//         // console.log("BBBBBBBBBBBBBBBBBBBBBBBBBBBBesult:");
-//         // console.log(res._passport);
-//         res.send('<span style="white-space: pre-wrap">'+JSON.stringify(req.user, '<br>', 4)+'</span>');
-//     }
-// )
-
-const port = process.env.PORT || 4000;
-app.listen(port, () => {
-    console.log(`listening on ${port}`);
-});

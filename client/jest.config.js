@@ -1,8 +1,9 @@
 module.exports = {
-    roots: ['<rootDir>/__tests__'],
     setupFiles: ['jest-canvas-mock'],
     transform: {
         '^.+\\.tsx?$': 'ts-jest',
+        '^.*\\.vue$': 'vue-jest',
     },
-    moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
+    testRegex: '(/__tests__/.*|(\\.|/)(test|spec))\\.(jsx?|tsx?)$',
+    moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node', 'vue'],
 };

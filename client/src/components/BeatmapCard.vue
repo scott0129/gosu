@@ -1,7 +1,7 @@
 <template>
     <div v-on:click="selectionCallback(beatmapId)" class="beatmap-card">
-        <h1>{{ title }}</h1>
-        <h4>{{ artist }}</h4>
+        <h1 class="beatmap-title">{{ title }}</h1>
+        <h4 class="beatmap-artist">{{ artist }}</h4>
         <div class="audio-player"></div>
         <button v-on:click.stop="togglePlay">
             Preview music
