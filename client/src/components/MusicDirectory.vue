@@ -9,6 +9,7 @@
             v-bind:title="beatmap.title"
             v-bind:artist="beatmap.artist"
             v-bind:previewUrl="beatmap.preview_url"
+            v-bind:selectionCallback="selectionCallback"
         ></BeatmapCard>
     </div>
 </template>
@@ -28,6 +29,7 @@ export default {
     },
     props: {
         beatmaps: Array,
+        selectionCallback: Function,
     },
 };
 </script>

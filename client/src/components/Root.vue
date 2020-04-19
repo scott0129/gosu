@@ -1,9 +1,11 @@
 <template>
     <div class="container">
         <!-- <div :is="currentComponent"></div> -->
+        <OsuGameVue v-if="currentlyPlayingGame"></OsuGameVue>
         <MusicDirectory
-            v-if="beatmaps"
+            v-else-if="beatmaps"
             v-bind:beatmaps="beatmaps"
+            v-bind:selectionCallback="selectedSong"
         ></MusicDirectory>
         <a v-else href="/login">Connect to Osu</a>
         <div id="game-area"></div>
@@ -18,19 +20,24 @@ export default {
     name: 'Root',
     components: {
         MusicDirectory,
+        OsuGameVue,
     },
     data() {
         const beatmapCookie = $cookies.get('beatmaps');
         let parsedBeatmaps = null;
         if (beatmapCookie) {
-            parsedBeatmaps = JSON.parse(beatmapCookie); 
+            parsedBeatmaps = JSON.parse(beatmapCookie);
         }
         return {
             currentComponent: MusicDirectory,
             beatmaps: parsedBeatmaps,
+            currentlyPlayingGame: null,
         };
     },
     methods: {
+        selectedSong: function(beatmapId) {
+            this.currentlyPlayingGame = beatmapId;
+        },
         startGame: function () {
             this.currentComponent = OsuGameVue;
         },

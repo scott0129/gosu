@@ -77,7 +77,7 @@ passport.use('osu-provider', new OAuth2Strategy({
                         'Authorization': accessString,
                     },
                     data: {
-                        'limit': 5,
+                        'limit': 10,
                         'username': response.data.username// This isn't necessary for the API but we read it when we get the response with JSON.parse
                     }
                 })

@@ -1,8 +1,11 @@
 <template>
-    <div v-on:click="togglePlay" class="beatmap-row">
+    <div v-on:click="selectionCallback(beatmapId)" class="beatmap-card">
         <h1>{{ title }}</h1>
         <h4>{{ artist }}</h4>
         <div class="audio-player"></div>
+        <button v-on:click.stop="togglePlay">
+            Preview music
+        </button>
     </div>
 </template>
 
@@ -17,6 +20,7 @@ export default {
     methods: {
         togglePlay: function (): void {
             if (this.audio.paused) {
+                this.audio.currentTime = 0;
                 this.audio.play();
             } else {
                 this.audio.pause();
@@ -30,6 +34,7 @@ export default {
         title: String,
         artist: String,
         previewUrl: String,
+        selectionCallback: Function,
     },
 };
 </script>
@@ -39,5 +44,10 @@ export default {
     width: 600px;
     margin: 50px auto;
     text-align: center;
+}
+
+.beatmap-card {
+    border-radius: 20px;
+    border: 2px ridge black;
 }
 </style>
