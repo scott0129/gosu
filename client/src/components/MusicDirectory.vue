@@ -2,6 +2,7 @@
     <div class="beatmap-listing">
         <BeatmapCard
             v-for="beatmap in beatmaps"
+            ref="domBeatmaps"
             v-bind:key="beatmap.beatmap_id"
             v-bind:beatmapId="beatmap.beatmap_id"
             v-bind:version="beatmap.version"
@@ -9,7 +10,8 @@
             v-bind:title="beatmap.title"
             v-bind:artist="beatmap.artist"
             v-bind:previewUrl="beatmap.preview_url"
-            v-on:click.native.stop="manager.select(beatmap.beatmap_id)"
+            v-bind:beingPreviewed="beatmap.beatmap_id === currentPreviewId"
+            v-on:click.native.stop="selectSongCallback(beatmap.beatmap_id)"
         ></BeatmapCard>
     </div>
 </template>
@@ -24,20 +26,22 @@ export default {
         return {
             paused: true,
             audio: new Audio('https://b.ppy.sh/preview/675615.mp3'),
-            manager: new MusicManager(this.beatmaps, this.selectionCallback),
+            manager: new MusicManager(this.beatmaps, this.playGameCallback),
+            currentPreviewId: -1,
         };
     },
     methods: {
-        printCall(): void {
-            console.log("HELLO I GOT CLICKED");
-        }
+        selectSongCallback(beatmapId): void {
+            this.manager.select(beatmapId);
+            this.currentPreviewId = beatmapId;
+        },
     },
     components: {
         BeatmapCard,
     },
     props: {
         beatmaps: Array,
-        selectionCallback: Function,
+        playGameCallback: Function,
     },
 };
 </script>

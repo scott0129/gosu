@@ -5,7 +5,7 @@
         <MusicDirectory
             v-else-if="beatmaps"
             v-bind:beatmaps="beatmaps"
-            v-bind:selectionCallback="selectedSong"
+            v-bind:playGameCallback="selectedSong"
         ></MusicDirectory>
         <a v-else href="/login">Connect to Osu</a>
         <div id="game-area"></div>

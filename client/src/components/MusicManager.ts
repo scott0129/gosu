@@ -7,13 +7,13 @@ class MusicManager {
      */
     private beatmaps: BeatmapMetadata[];
     private gameStartCallback: Function;
-    private currentlySelected: string;
+    private currentlySelected: number;
     private audioElement: HTMLAudioElement;
 
     constructor(beatmaps: BeatmapMetadata[], gameStartCallback: Function) {
         this.beatmaps = beatmaps;
         this.gameStartCallback = gameStartCallback;
-        this.currentlySelected = '';
+        this.currentlySelected = -1;
         this.audioElement = new Audio();
         this.audioElement.addEventListener(
             'canplaythrough',
@@ -22,26 +22,30 @@ class MusicManager {
     }
 
     select(songId: number): void {
-        const songUrl = this.getBeatmapFromId(songId).preview_url;
-        if (songUrl === this.currentlySelected) {
+        const selectedMap = this.getBeatmapFromId(songId);
+        if (songId === this.currentlySelected) {
             this.audioElement.pause();
-            this.gameStartCallback(songUrl);
+            this.gameStartCallback(selectedMap);
             return;
         } else {
-            this.currentlySelected = songUrl;
+            this.currentlySelected = songId;
             this.audioElement.pause();
-            this.audioElement.setAttribute('src', songUrl);
+            this.audioElement.setAttribute('src', selectedMap.preview_url);
             this.audioElement.load();
         }
     }
 
     /** Return the url of the currently playing song **/
-    getSelected() {
+    getSelected(): number {
         return this.currentlySelected;
     }
 
-    private getBeatmapFromId(beatmapId: number): string {
-        return this.beatmaps.find(beatmap => beatmap.beatmap_id == beatmapId);
+    private getBeatmapFromId(beatmapId: number): BeatmapMetadata {
+        const candidate = this.beatmaps.find(beatmap => beatmap.beatmap_id == beatmapId);
+        if (candidate == undefined) {
+            throw Error(`Beatmap with id: ${beatmapId} could not be found by MusicManager`);
+        }
+        return candidate;
     }
 }
 
