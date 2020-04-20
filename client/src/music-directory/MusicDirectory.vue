@@ -25,7 +25,6 @@ export default {
     data(): Record<string, any> {
         return {
             paused: true,
-            audio: new Audio('https://b.ppy.sh/preview/675615.mp3'),
             manager: new MusicManager(this.beatmaps, this.playGameCallback),
             currentPreviewId: -1,
         };

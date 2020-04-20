@@ -17,7 +17,7 @@ class MusicManager {
         this.audioElement = new Audio();
         this.audioElement.addEventListener(
             'canplaythrough',
-            event => this.audioElement.play() // This should be play()
+            event => this.audioElement.play()
         );
     }
 

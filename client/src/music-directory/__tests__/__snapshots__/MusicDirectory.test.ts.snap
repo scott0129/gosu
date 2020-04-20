@@ -1,0 +1,16 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`render tests has the expected HTML structure 1`] = `
+"<div class=\\"beatmap-listing\\" beingpreviewed=\\"function () { }\\">
+  <div class=\\"beatmap-card\\">
+    <h1 class=\\"beatmap-title\\">Ave Maria</h1>
+    <h4 class=\\"beatmap-artist\\">Bach</h4>
+    <div class=\\"audio-player\\"></div>
+  </div>
+  <div class=\\"beatmap-card\\">
+    <h1 class=\\"beatmap-title\\">Fur Elise</h1>
+    <h4 class=\\"beatmap-artist\\">Beethoven</h4>
+    <div class=\\"audio-player\\"></div>
+  </div>
+</div>"
+`;

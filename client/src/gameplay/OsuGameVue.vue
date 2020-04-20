@@ -3,7 +3,7 @@
 </template>
 
 <script lang="ts">
-import OsuGame from '../app/OsuGame';
+import OsuGame from './OsuGame';
 export default {
     name: 'OsuGameVue',
     data() {

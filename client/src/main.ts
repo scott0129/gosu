@@ -1,6 +1,6 @@
 import Vue from 'vue';
 import VueCookies from 'vue-cookies';
-import Root from './components/Root';
+import Root from './Root';
 
 Vue.use(VueCookies);
 

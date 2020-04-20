@@ -13,8 +13,8 @@
 </template>
 
 <script lang="ts">
-import MusicDirectory from './MusicDirectory';
-import OsuGameVue from './OsuGameVue';
+import MusicDirectory from './music-directory/MusicDirectory';
+import OsuGameVue from './gameplay/OsuGameVue';
 
 export default {
     name: 'Root',
