@@ -22,8 +22,8 @@ class OsuGame {
         this.game = new Phaser.Game({
             parent: 'game-area',
             type: Phaser.AUTO,
-            width: 800,
-            height: 600,
+            width: 640,
+            height: 480,
             pixelArt: true,
             title: 'Phaser 3 web-osu game',
             banner: {

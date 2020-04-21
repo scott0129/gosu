@@ -15,7 +15,7 @@ export default {
         this.game = new OsuGame('game-area');
     },
     destroyed() {
-        this.game.destroy();
+        this.game.destroyGame();
     },
     methods: {},
 };

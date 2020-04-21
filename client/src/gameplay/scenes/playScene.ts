@@ -1,15 +1,11 @@
 import Phaser from 'phaser';
 import HitCircle from './hitCircle';
 
-const sceneConfig: Phaser.Types.Scenes.SettingsConfig = {
-    key: 'play',
-};
-
 export default class PlayScene extends Phaser.Scene {
     private gameElements: HitCircle[];
 
     constructor() {
-        super(sceneConfig);
+        super({ key: 'play' });
         this.gameElements = [];
     }
 

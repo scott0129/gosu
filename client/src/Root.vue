@@ -1,11 +1,11 @@
 <template>
     <div class="container">
         <!-- <div :is="currentComponent"></div> -->
-        <OsuGameVue v-if="currentlyPlayingGame"></OsuGameVue>
+        <OsuGameVue v-if="gameIsPlaying"></OsuGameVue>
         <MusicDirectory
             v-else-if="beatmaps"
             v-bind:beatmaps="beatmaps"
-            v-bind:playGameCallback="selectedSong"
+            v-bind:playGameCallback="startPlayingGame"
         ></MusicDirectory>
         <a v-else href="/login">Connect to Osu</a>
         <div id="game-area"></div>
@@ -31,15 +31,17 @@ export default {
         return {
             currentComponent: MusicDirectory,
             beatmaps: parsedBeatmaps,
-            currentlyPlayingGame: null,
+            gameIsPlaying: false
+            beatmap: null,
         };
     },
     methods: {
-        selectedSong: function(beatmapId) {
-            this.currentlyPlayingGame = beatmapId;
-        },
-        startGame: function () {
-            this.currentComponent = OsuGameVue;
+        startPlayingGame: function(beatmapObj) {
+            this.gameIsPlaying = true;
+            
+            // AFAIK the window.beatmap is the only way to pass the data to Phaser
+            this.beatmap = beatmapObj;
+            window.beatmap = beatmapObj;
         },
     },
 };
