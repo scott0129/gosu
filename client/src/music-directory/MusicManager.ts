@@ -15,6 +15,7 @@ class MusicManager {
         this.gameStartCallback = gameStartCallback;
         this.currentlySelected = -1;
         this.audioElement = new Audio();
+        this.audioElement.volume = 0.3;
         this.audioElement.addEventListener(
             'canplaythrough',
             event => this.audioElement.play()

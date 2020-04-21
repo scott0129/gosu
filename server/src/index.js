@@ -8,6 +8,8 @@ const env = require('./.env');
 const session = require('express-session');
 const axios = require('axios');
 const MongoClient = require('mongodb').MongoClient;
+const request = require('request');
+
 
 const STATIC_DIR = '../client/dist'
 
@@ -111,6 +113,7 @@ function fetchUserInfo(accessToken) {
 }
 
 function extractBeatmapsInfo(rawData) {
+    console.log(rawData);
     let beatmapsList = rawData.map(
         ({ beatmap_id, 
             beatmap,
@@ -175,4 +178,21 @@ app.get('/logged',
     function(req, res) {
         res.send('<a href="/api/me"> click here! </a>');
     }
-)
+);
+
+/* Forward the data from the beatmap API back to client. 'request' is deprecated as of Feburary 2020
+ * but there are no alternatives that will let us pipe without putting data into disk/memory
+ */
+app.get('/b/:setId',
+    function(req, res) {
+        const setId = req.params.setId;
+        console.log(req.headers);
+        request(`https://bloodcat.com/osu/s/${setId}`)
+            .on('data', function(data) {
+                res.write(data);
+            })
+            .on('end', function() {
+                res.end();
+            })
+    }
+);

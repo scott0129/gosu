@@ -19,6 +19,8 @@
   "license": "ISC",
   "dependencies": {
     "@vue/test-utils": "^1.0.0-beta.33",
+    "jszip": "^3.4.0",
+    "jszip-utils": "^0.1.0",
     "osu-parser": "^0.3.3",
     "phaser": "^3.20.1",
     "vue": "^2.6.11",
