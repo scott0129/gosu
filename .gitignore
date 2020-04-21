@@ -1,3 +1,6 @@
+# OSU files
+*.osz
+
 # OSX
 #
 .DS_Store
