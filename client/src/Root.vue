@@ -31,8 +31,8 @@ export default {
         return {
             currentComponent: MusicDirectory,
             beatmaps: parsedBeatmaps,
-            gameIsPlaying: false
-            beatmap: null,
+            gameIsPlaying: false,
+            beatmapInfo: null,
         };
     },
     methods: {
@@ -40,8 +40,8 @@ export default {
             this.gameIsPlaying = true;
             
             // AFAIK the window.beatmap is the only way to pass the data to Phaser
-            this.beatmap = beatmapObj;
-            window.beatmap = beatmapObj;
+            this.beatmapInfo = beatmapObj;
+            window.beatmapInfo = beatmapObj;
         },
     },
 };

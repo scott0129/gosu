@@ -20,10 +20,14 @@ class OsuGame {
     newGame(tagId: string): void {
         if (this.game) return;
         this.game = new Phaser.Game({
-            parent: 'game-area',
             type: Phaser.AUTO,
-            width: 640,
-            height: 480,
+            scale: {
+                parent: 'game-area',
+                mode: Phaser.Scale.ENVELOP,
+                width: 800,
+                height: 600,
+                resolution: window.devicePixelRatio,
+            },
             pixelArt: true,
             title: 'Phaser 3 web-osu game',
             banner: {
