@@ -6,6 +6,7 @@ import endScene from './scenes/endScene';
 
 class OsuGame {
     private game: Phaser.Game;
+    private const aspectRatio = 4/3;
 
     // Some hacks for hot module reloading
     constructor(tagId: string) {
@@ -18,22 +19,26 @@ class OsuGame {
     }
 
     newGame(tagId: string): void {
+        // Calculate what the width and height to fit the screen while maintaining ratio
+        let visualWidth = window.innerWidth;
+        let visualHeight = window.innerHeight;
+        if ( (visualWidth / visualHeight) > this.aspectRatio) {
+            visualWidth = visualHeight * this.aspectRatio;
+        } else {
+            visualHeight = Math.floor(visualWidth / aspectRatio);
+        }
+
         if (this.game) return;
         this.game = new Phaser.Game({
             type: Phaser.AUTO,
+            backgroundColor: '#2dab2d',
             scale: {
+                mode: Phaser.Scale.FIT,
                 parent: 'game-area',
-                mode: Phaser.Scale.ENVELOP,
-                width: 800,
-                height: 600,
-                resolution: window.devicePixelRatio,
+                width: visualWidth,
+                height: visualHeight,
             },
-            pixelArt: true,
             title: 'Phaser 3 web-osu game',
-            banner: {
-                text: 'white',
-                background: ['#FD7400', '#FFE11A', '#BEDB39', '#1F8A70', '#004358'],
-            },
             scene: [bootScene, menuScene, playScene, endScene],
         });
     }

@@ -1,9 +1,5 @@
 <template>
-    <div id="game-area">
-        <button v-on:click.stop="loadData($event)" type="file" id="input">
-            Load File!
-        </button>
-    </div>
+    <div id="game-area"></div>
 </template>
 
 <script lang="ts">
@@ -22,6 +18,7 @@ export default {
         };
     },
     mounted() {
+        this.loadData();
     },
     destroyed() {
         this.game.destroyGame();
@@ -64,7 +61,7 @@ export default {
                 )
             });
         },
-        loadData(event) {
+        loadData() {
             const oszUrl = `/b/${this.beatmapInfo.set_id}`
             const filename = this.extractOsuFilename(this.beatmapInfo);
             const rawFile = this.virtualZip.file(filename);
@@ -92,18 +89,22 @@ export default {
 };
 </script>
 
-<style scoped>
-* {
-margin: 0;
-padding: 0;
-}
-.container {
-    width: 600px;
-    text-align: center;
-}
+<style scope>
 canvas {
-    /* width: 100%; */
-    /* height: 100%; */
-    /* object-fit: contain; */
+    padding: 0;
+    margin: auto;
+    display: block;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+}
+
+#game-area {
+    width: 100%; 
+    height: 100%;
+    text-align: center;
+    vertical-align: center;
 }
 </style>

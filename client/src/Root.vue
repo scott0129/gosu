@@ -8,7 +8,6 @@
             v-bind:playGameCallback="startPlayingGame"
         ></MusicDirectory>
         <a v-else href="/login">Connect to Osu</a>
-        <div id="game-area"></div>
     </div>
 </template>
 
@@ -47,10 +46,14 @@ export default {
 };
 </script>
 
-<style scoped>
+<style scope>
+body {
+    padding: 0;
+    margin: 0;
+}
+
 .container {
-    width: 600px;
-    margin: 50px auto;
-    text-align: center;
+    width: 100%;
+    height: 100%;
 }
 </style>

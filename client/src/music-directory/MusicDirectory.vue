@@ -46,9 +46,10 @@ export default {
 </script>
 
 <style scoped>
-.container {
+.beatmap-listing {
     width: 600px;
-    margin: 50px auto;
+    margin: 40px auto;
     text-align: center;
+    position:relative;
 }
 </style>

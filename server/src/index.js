@@ -188,28 +188,34 @@ app.get("/logged", function(req, res) {
 /* Forward the data from the beatmap API back to client. 'request' is deprecated as of Feburary 2020
  * but there are no alternatives that will let us pipe without putting data into disk/memory
  */
-app.get("/b/:setId", async function(req, res) {
+app.get("/b/:setId", function(req, res) {
     const setId = req.params.setId;
     const localPath = `./beatmap-${setId}.osz`;
 
     if (!fs.existsSync(localPath)) {
         console.log("Downloading from API");
         const localCache = fs.createWriteStream(localPath);
-        await request(`https://bloodcat.com/osu/s/${setId}`)
+        request(`https://bloodcat.com/osu/s/${setId}`)
             .on("data", function(data) {
                 localCache.write(data);
+                res.write(data);
             })
-            .on("end", () => localCache.end());
-    }
-    console.log("Serving local file");
-    fs.createReadStream(localPath)
-        .on("data", function(data) {
-            res.write(data);
-            var writeStream = fs.createWriteStream("./output");
-        })
-        .on("end", function() {
-            res.end();
-        });
+            .on("end", () => { 
+                console.log("request stream ended");
+                localCache.end()
+                res.end();
+            });
+    } else {
+        console.log("Serving local file");
+        fs.createReadStream(localPath)
+            .on("data", function(data) {
+                res.write(data);
+            })
+            .on("end", function() {
+                console.log("readstream closed");
+                res.end();
+            });
+        }
 });
 
 // This bottom one should be used in production so we don't save a crazy amount of files
