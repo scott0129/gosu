@@ -25,7 +25,7 @@ class OsuGame {
         if ( (visualWidth / visualHeight) > this.aspectRatio) {
             visualWidth = visualHeight * this.aspectRatio;
         } else {
-            visualHeight = Math.floor(visualWidth / aspectRatio);
+            visualHeight = Math.floor(visualWidth / this.aspectRatio);
         }
 
         if (this.game) return;
@@ -34,7 +34,7 @@ class OsuGame {
             backgroundColor: '#2dab2d',
             scale: {
                 mode: Phaser.Scale.FIT,
-                parent: 'game-area',
+                parent: tagId,
                 width: visualWidth,
                 height: visualHeight,
             },

@@ -10,7 +10,7 @@ export default class PlayScene extends Phaser.Scene {
     constructor() {
         super({ key: 'play' });
         this.gameElements = [];
-        window.debugObj = this;
+        // window.debugObj = this;
     }
 
     public init(): void {
@@ -68,6 +68,7 @@ export default class PlayScene extends Phaser.Scene {
 
             hitObjectTweens.push(
             {
+                // Fade in
                 targets: hitCircle,
                 onStart: hitCircle.start,
                 onStartScope: hitCircle,
@@ -75,17 +76,19 @@ export default class PlayScene extends Phaser.Scene {
                 offset: hitObjectData.startTime,
                 duration: fadeIn,
             }, {
+                // Shrink timing radius
                 targets: hitCircle,
                 timingRadius: 0,
                 offset: hitObjectData.startTime,
                 duration: preempt,
             }, {
+                // Fade out
                 targets: hitCircle,
                 onEnd: hitCircle.done,
                 onEndScope: hitCircle,
                 alpha: 0,
                 offset: hitObjectData.startTime + preempt,
-                duration: 100,
+                duration: 500,
             })
         }
 

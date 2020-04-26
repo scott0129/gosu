@@ -4,24 +4,25 @@ export default class HitCircle {
     private x: number;
     private y: number;
 
-    private hitSound: Phaser.Sound.BaseSoundManager;
     private group: Phaser.GameObjects.Group;
     private hitGraphic: Phaser.GameObjects.Graphics;
     private timingGraphic: Phaser.GameObjects.Graphics;
-    private startTime: number;
+    private hitSound: Phaser.Sound.BaseSoundManager;
 
     public active: boolean;
     public alpha: number;
     public timingRadius: number;
 
+    /* Max radius of the timing graphic */
     readonly MAX_TIMING_RADIUS: number = 300;
-    readonly HIT_RADIUS: number = 65;
-    readonly DURATION_MS: number = 2000;
 
+    /* Radius of clickable graphic */
+    readonly HIT_RADIUS: number = 65;
+    
+    /* Width of timingGraphic and border around hitGraphic */
     readonly BORDER_WIDTH: number = 10;
 
     constructor(scene: Phaser.Scene, x: number, y: number) {
-        // this.hitSound = hitSound;
         this.x = x;
         this.y = y;
 
@@ -29,32 +30,34 @@ export default class HitCircle {
         this.active = false;
 
         this.hitSound = scene.sound;
+        this.timingRadius = this.MAX_TIMING_RADIUS;
 
         const hitCircle = new Phaser.Geom.Circle(0, 0, this.HIT_RADIUS);
 
+        // Draw the larger, timing circle
         this.timingGraphic = scene.add.graphics();
         this.timingGraphic.lineStyle(this.BORDER_WIDTH, 0xabcede);
         this.timingGraphic.strokeCircleShape(this.getTimingCircle());
 
+        // Draw the inner, clickable circle
         this.hitGraphic = scene.add.graphics();
         this.hitGraphic.lineStyle(this.BORDER_WIDTH, 0xffffff);
         this.hitGraphic.strokeCircleShape(hitCircle);
         this.hitGraphic.fillStyle(0x112288, 1);
         this.hitGraphic.fillCircleShape(hitCircle);
 
+        // Add listeners to clickable circle
         this.hitGraphic.setInteractive(hitCircle, Phaser.Geom.Circle.Contains);
         this.hitGraphic.on('pointerdown', this.onClick.bind(this));
 
-        this.timingRadius = this.MAX_TIMING_RADIUS;
-
+        // Group together timingGraphic and hitGraphic so they can be moved/adjusted together
         this.group = scene.add.group([this.timingGraphic, this.hitGraphic]);
         this.group.setX(x);
         this.group.setY(y);
-        this.group.setAlpha(0);
+        this.group.setAlpha(this.alpha);
     }
 
     start(): void {
-        this.startTime = Date.now();
         this.active = true;
     }
 

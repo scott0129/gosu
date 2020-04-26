@@ -1,4 +1,5 @@
 ### Code structure
+ - Make OsuGameVue's Promise returning functions into async functions
 
 ### Similartiy with OSU
  - Exact calculaitons for approachRate and fadeIn

@@ -24,28 +24,29 @@ export default {
         this.game.destroyGame();
     },
     methods: {
-        startGame(osuObject) {
+        startGame() {
             console.log("starting game!");
-            window.beatmap = osuObject;
             if (this.game) {
                 this.game.destroyGame();
             }
             this.game = new OsuGame('game-area');
         },
         parseOsu(stream) {
-            return new Promise( (resolutionFunc, rejectionFunc) => {
+            return new Promise( (resolveFunc, rejectFunc) => {
                 OsuParser.parseStream(stream, function (err, beatmap) {
                     if (err) {
-                        resolutionFunc(err)
+                        rejectFunc(err);
                     } else {
-                        resolutionFunc(beatmap);
+                        console.log('parseOsu resolve func:', beatmap);
+                        resolveFunc(beatmap);
                     }
                 });
             });
         },
         extractOsuFilename(info: BeatmapMetadata) {
-            return `${info.artist} - ${info.title} (${info.creator}) [${info.version}].osu`
-        }
+            const filename = `${info.artist} - ${info.title} (${info.creator}) [${info.version}].osu`
+            return filename.replace(/\*/g, ''); // Remove any 'illegal' characters
+        },
         fetchOsz(url: string) {
             return new Promise( (resolutionFunc, rejectionFunc) => {
                 JSZipUtils.getBinaryContent(
@@ -61,29 +62,28 @@ export default {
                 )
             });
         },
-        loadData() {
-            const oszUrl = `/b/${this.beatmapInfo.set_id}`
+        async loadOsz() {
             const filename = this.extractOsuFilename(this.beatmapInfo);
             const rawFile = this.virtualZip.file(filename);
-            if (rawFile == null) {
-                // If we don't have the file already, load it
-                this.fetchOsz(oszUrl)
-                    .then( (data) => { 
-                        console.log("Fetched .osz file from server!"); 
-                        return this.virtualZip.loadAsync(data) 
+            const osuObject = await this.parseOsu(rawFile.nodeStream())
+            console.log(osuObject);
+            window.beatmap = osuObject;
+            return
+        },
+        async loadData() {
+            if (!this.virtualZip.file('audio.mp3')) {
+                // If we don't have the .osz files loaded, fetch them
+                const oszUrl = `/b/${this.beatmapInfo.set_id}`
+                const loadAsyncPromise = await this.fetchOsz(oszUrl)
+                    .then( (data) => {
+                        console.log("Fetched .osz file from server!");
+                        return this.virtualZip.loadAsync(data)
                     })
-                    .then( (zip) => {
-                        console.log("Loaded .osz into virtual filesystem!");
-                        const filename = this.extractOsuFilename(this.beatmapInfo);
-                        const rawFile = zip.file(filename);
-                        return this.parseOsu(rawFile.nodeStream());
-                    })
-                    .then( (osuObject) => this.startGame(osuObject) )
-            } else {
-                // If we don't have the file already, load it
-                this.parseOsu(rawFile.nodeStream())
-                    .then( (osuObject) => this.startGame(osuObject) )
+                console.log(loadAsyncPromise);
             }
+            // If we have the .osz file, parse it
+            Promise.all([this.loadOsz()])
+                .then( () => this.startGame() )
         },
     },
 };
@@ -102,7 +102,7 @@ canvas {
 }
 
 #game-area {
-    width: 100%; 
+    width: 100%;
     height: 100%;
     text-align: center;
     vertical-align: center;
