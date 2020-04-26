@@ -4,6 +4,9 @@ import HitCircle from './hitCircle';
 export default class PlayScene extends Phaser.Scene {
     private gameElements: HitCircle[];
 
+    private viewWidth: number
+    private viewHeight: number
+
     constructor() {
         super({ key: 'play' });
         this.gameElements = [];
@@ -11,10 +14,38 @@ export default class PlayScene extends Phaser.Scene {
     }
 
     public init(): void {
-        const img = this.add.image(this.cameras.main.width/2, this.cameras.main.height/2, 'sky');
-        img.displayWidth = this.cameras.main.width;
-        img.displayHeight = this.cameras.main.width;
+        this.viewWidth = this.cameras.main.width;
+        this.viewHeight = this.cameras.main.height;
+        const img = this.add.image(0, 0, 'sky');
+        img.setOrigin(0, 0);
+        img.displayWidth = this.viewWidth;
+        img.displayHeight = this.viewHeight;
         this.sound.add('softHitclap');
+    }
+
+    /*
+    * All .osz files assuem that the screen is 640 by 480
+    */
+    private osuPixelToDisplayPixel(osuPosList) {
+        const displayX = Math.floor((osuPosList[0] / 640) * this.viewWidth);
+        const displayY = Math.floor((osuPosList[1] / 480) * this.viewHeight);
+        return [displayX, displayY];
+    }
+
+    private getPreemptDuration(approachRate: number): number {
+        if (approachRate < 5) {
+            return 1200 + 600 * (5 - approachRate) / 5
+        } else {
+            return 1200 - 750 * (approachRate - 5) / 5
+        }
+    }
+
+    private getFadeInDuration(approachRate: number): number{
+        if (approachRate < 5) {
+            return 800 + 400 * (5 - approachRate) / 5
+        } else {
+            return 800 - 500 * (approachRate - 5) / 5
+        }
     }
 
     public create(): void {
@@ -23,52 +54,45 @@ export default class PlayScene extends Phaser.Scene {
 
         const hitObjectTweens = [];
 
-        // for (let i = 0; i < 20; i++) {
-        //     window.beatmap.
-        // }
-        //
+        const hitObjects = window.beatmap.hitObjects
+        // for (let i = 0; i < 30; i++) {
+        for (let i = 0; i < hitObjects.length; i++) {
+            const hitObjectData = hitObjects[i];
+
+            const [x, y] = this.osuPixelToDisplayPixel(hitObjectData.position);
+            const hitCircle = this.createCircle(x, y);
+
+            const AR = window.beatmap.ApproachRate;
+            const fadeIn = this.getFadeInDuration(AR);
+            const preempt = this.getPreemptDuration(AR);
+
+            hitObjectTweens.push(
+            {
+                targets: hitCircle,
+                onStart: hitCircle.start,
+                onStartScope: hitCircle,
+                alpha: 0.8,
+                offset: hitObjectData.startTime,
+                duration: fadeIn,
+            }, {
+                targets: hitCircle,
+                timingRadius: 0,
+                offset: hitObjectData.startTime,
+                duration: preempt,
+            }, {
+                targets: hitCircle,
+                onEnd: hitCircle.done,
+                onEndScope: hitCircle,
+                alpha: 0,
+                offset: hitObjectData.startTime + preempt,
+                duration: 100,
+            })
+        }
+
         const timeline = this.tweens.timeline({
             ease: 'linear',
-            duration: 5000,
 
-            tweens: [{
-                targets: this.gameElements[0],
-                onStart: this.gameElements[0].start,
-                onStartScope: this.gameElements[0],
-                alpha: 1,
-                offset: 1000,
-                duration: 500,
-            }, {
-                targets: this.gameElements[0],
-                timingRadius: 0,
-                offset: 1000,
-                duration: 1000,
-            }, {
-                targets: this.gameElements[0],
-                onEnd: this.gameElements[0].done,
-                onEndScope: this.gameElements[0],
-                alpha: 0,
-                offset: 2000,
-                duration: 100,
-            }, {
-                targets: this.gameElements[1],
-                onStart: this.gameElements[1].start,
-                onStartScope: this.gameElements[1],
-                alpha: 1,
-                offset: 2000,
-                duration: 500,
-            }, {
-                targets: this.gameElements[1],
-                timingRadius: 1,
-                offset: 2000,
-                duration: 1000,
-            }, {
-                targets: this.gameElements[1],
-                onEnd: this.gameElements[1].done,
-                onEndScope: this.gameElements[1],
-                alpha: 0,
-                duration: 100,
-            }]
+            tweens: hitObjectTweens,
         });
     }
 
@@ -81,5 +105,6 @@ export default class PlayScene extends Phaser.Scene {
     private createCircle(x: number, y: number): void {
         const hitCircle = new HitCircle(this, x, y);
         this.gameElements.push(hitCircle)
+        return hitCircle;
     }
 }

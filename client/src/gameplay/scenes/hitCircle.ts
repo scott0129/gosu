@@ -18,7 +18,7 @@ export default class HitCircle {
     readonly HIT_RADIUS: number = 65;
     readonly DURATION_MS: number = 2000;
 
-    readonly BORDER_WIDTH: number = 5;
+    readonly BORDER_WIDTH: number = 10;
 
     constructor(scene: Phaser.Scene, x: number, y: number) {
         // this.hitSound = hitSound;
