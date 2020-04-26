@@ -1,6 +1,12 @@
 export default class BootScene extends Phaser.Scene {
+
+    private musicStream: Stream;
+    private musicLoaded: boolean;
+
     constructor() {
         super({ key: 'boot' });
+        this.musicStream = window.musicStream;
+        this.musicLoaded = false;
     }
 
     public preload(): void {
@@ -11,6 +17,10 @@ export default class BootScene extends Phaser.Scene {
 
         this.load.image('sky', require('../../assets/sky.png'));
         this.load.image('star', require('../../assets/star.png'));
+
+        this.sound.decodeAudio('music', this.musicStream);
+        this.sound.addListener('decodedall', () => this.musicLoaded = true)
+
         this.load.audio(
             'softHitclap',
             require('../../assets/audio/soft-hitclap.wav')
@@ -51,6 +61,7 @@ export default class BootScene extends Phaser.Scene {
     }
 
     public update(): void {
+        if (!this.musicLoaded) { return; }
         this.scene.start('menu');
     }
 }

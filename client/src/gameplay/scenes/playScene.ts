@@ -97,6 +97,8 @@ export default class PlayScene extends Phaser.Scene {
 
             tweens: hitObjectTweens,
         });
+        this.sound.play('music');
+
     }
 
     public update(): void {
