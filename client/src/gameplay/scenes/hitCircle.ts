@@ -7,7 +7,7 @@ export default class HitCircle {
     private group: Phaser.GameObjects.Group;
     private hitGraphic: Phaser.GameObjects.Graphics;
     private timingGraphic: Phaser.GameObjects.Graphics;
-    private hitSound: Phaser.Sound.BaseSoundManager;
+    private sceneSounds: Phaser.Sound.BaseSoundManager;
 
     public active: boolean;
     public alpha: number;
@@ -29,7 +29,7 @@ export default class HitCircle {
         this.alpha = 0;
         this.active = false;
 
-        this.hitSound = scene.sound;
+        this.sceneSounds = scene.sound;
         this.timingRadius = this.MAX_TIMING_RADIUS;
 
         const hitCircle = new Phaser.Geom.Circle(0, 0, this.HIT_RADIUS);
@@ -77,7 +77,7 @@ export default class HitCircle {
     }
 
     private onClick(): void {
-        this.hitSound.play('softHitclap');
+        this.sceneSounds.play('softHitclap');
     }
 
     private getTimingCircle(): Phaser.Geom.Circle {

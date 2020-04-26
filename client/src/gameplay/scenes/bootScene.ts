@@ -18,6 +18,7 @@ export default class BootScene extends Phaser.Scene {
         this.load.image('sky', require('../../assets/sky.png'));
         this.load.image('star', require('../../assets/star.png'));
 
+        // this.load.binary('music', this.musicStream);
         this.sound.decodeAudio('music', this.musicStream);
         this.sound.addListener('decodedall', () => this.musicLoaded = true)
 

@@ -4,8 +4,11 @@ import HitCircle from './hitCircle';
 export default class PlayScene extends Phaser.Scene {
     private gameElements: HitCircle[];
 
-    private viewWidth: number
-    private viewHeight: number
+    private viewWidth: number;
+    private viewHeight: number;
+    private timeline: Timeline;
+    private softHitclap: Sound;
+    private music: Sound;
 
     constructor() {
         super({ key: 'play' });
@@ -20,7 +23,8 @@ export default class PlayScene extends Phaser.Scene {
         img.setOrigin(0, 0);
         img.displayWidth = this.viewWidth;
         img.displayHeight = this.viewHeight;
-        this.sound.add('softHitclap');
+        this.softHitclap = this.sound.add('softHitclap');
+        this.music = this.sound.add('music');
     }
 
     /*
@@ -48,7 +52,7 @@ export default class PlayScene extends Phaser.Scene {
         }
     }
 
-    public create(): void {
+    public preload(): void {
         this.createCircle(200, 200);
         this.createCircle(600, 400);
 
@@ -73,13 +77,13 @@ export default class PlayScene extends Phaser.Scene {
                 onStart: hitCircle.start,
                 onStartScope: hitCircle,
                 alpha: 0.8,
-                offset: hitObjectData.startTime,
+                offset: hitObjectData.startTime - preempt,
                 duration: fadeIn,
             }, {
                 // Shrink timing radius
                 targets: hitCircle,
                 timingRadius: 0,
-                offset: hitObjectData.startTime,
+                offset: hitObjectData.startTime - preempt,
                 duration: preempt,
             }, {
                 // Fade out
@@ -87,22 +91,35 @@ export default class PlayScene extends Phaser.Scene {
                 onEnd: hitCircle.done,
                 onEndScope: hitCircle,
                 alpha: 0,
-                offset: hitObjectData.startTime + preempt,
+                offset: hitObjectData.startTime,
                 duration: 500,
             })
         }
 
-        const timeline = this.tweens.timeline({
+        this.timeline = this.tweens.timeline({
             ease: 'linear',
 
             tweens: hitObjectTweens,
+            paused: true,
         });
-        this.sound.play('music');
+        this.timeline.init();
+    }
 
+    public create(): void {
+        // Whichever starts latest will be the one to sync
+        this.timeline.play();
+        this.music.play(); 
     }
 
     public update(): void {
+        const musicAheadBy = this.music.seek - this.timeline.elapsed/1000;
+        if (Math.abs(musicAheadBy) > 0.1) {
+            // Can't do this too often cause lag, but 0.1 second offset is massive
+            console.log("Synchronized!!!");
+            this.music.seek = this.timeline.elapsed/1000;
+        }
         for (let i = 0; i < this.gameElements.length; ++i) {
+            //TODO: This could probably be more efficient with events
             this.gameElements[i].update();
         }
     }

@@ -71,7 +71,6 @@ export default {
                 console.error('There was more than one .mp3 file! Picking the first for now, but ' +
                                 'this is a pretty critical assumption.');
             }
-            console.log(mp3Files[0]);
             await mp3Files[0].async("ArrayBuffer").then(function (data) {
                 window.musicStream = data;
             });
