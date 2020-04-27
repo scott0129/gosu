@@ -112,20 +112,22 @@ export default class PlayScene extends Phaser.Scene {
     }
 
     public update(): void {
-        const musicAheadBy = this.music.seek - this.timeline.elapsed/1000;
-        if (Math.abs(musicAheadBy) > 0.1) {
-            // Can't do this too often cause lag, but 0.1 second offset is massive
-            console.log("Synchronized!!!");
-            this.music.seek = this.timeline.elapsed/1000;
-        }
+        this.syncTimelineToMusic();
         for (let i = 0; i < this.gameElements.length; ++i) {
             //TODO: This could probably be more efficient with events
             this.gameElements[i].update();
         }
     }
 
+    // calling this constantly tries to sync 
+    private syncTimelineToMusic(musicAheadBy: number): void {
+        const musicAheadBy = this.music.seek - this.timeline.elapsed/1000;
+        console.log(musicAheadBy);
+        this.timeline.setTimeScale(1 + musicAheadBy);
+    }
+
     private createCircle(x: number, y: number): void {
-        const hitCircle = new HitCircle(this, x, y);
+        const hitCircle = new HitCircle(this, x, y, this.softHitclap);
         this.gameElements.push(hitCircle)
         return hitCircle;
     }

@@ -1,29 +1,35 @@
 import Phaser from 'phaser';
-import Hittable from './Hittable';
 
-export default class HitCircle extends Hittable {
+export default class Slider extends Hittable {
     private x: number;
     private y: number;
 
     private group: Phaser.GameObjects.Group;
     private hitGraphic: Phaser.GameObjects.Graphics;
     private timingGraphic: Phaser.GameObjects.Graphics;
-    private softHitclap: Phaser.Sound.BaseSound;
+    private sceneSounds: Phaser.Sound.BaseSoundManager;
 
     public active: boolean;
     public alpha: number;
     public timingRadius: number;
 
-    constructor(scene: Phaser.Scene, x: number, y: number, softHitclap: Sound) {
-        super();
+    /* Max radius of the timing graphic */
+    readonly MAX_TIMING_RADIUS: number = 300;
+
+    /* Radius of clickable graphic */
+    readonly HIT_RADIUS: number = 65;
+    
+    /* Width of timingGraphic and border around hitGraphic */
+    readonly BORDER_WIDTH: number = 10;
+
+    constructor(scene: Phaser.Scene, x: number, y: number) {
         this.x = x;
         this.y = y;
-
-        this.softHitclap = softHitclap;
 
         this.alpha = 0;
         this.active = false;
 
+        this.sceneSound = scene.sound;
         this.timingRadius = this.MAX_TIMING_RADIUS;
 
         const hitCircle = new Phaser.Geom.Circle(0, 0, this.HIT_RADIUS);
@@ -71,8 +77,7 @@ export default class HitCircle extends Hittable {
     }
 
     private onClick(): void {
-        console.log(this);
-        this.softHitclap.play();
+        this.sceneSounds.play('softHitclap');
     }
 
     private getTimingCircle(): Phaser.Geom.Circle {
