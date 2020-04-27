@@ -1,4 +1,5 @@
 import Phaser from 'phaser';
+import Hittable from './Hittable';
 
 export default class Slider extends Hittable {
     private x: number;
@@ -22,14 +23,18 @@ export default class Slider extends Hittable {
     /* Width of timingGraphic and border around hitGraphic */
     readonly BORDER_WIDTH: number = 10;
 
-    constructor(scene: Phaser.Scene, x: number, y: number) {
-        this.x = x;
-        this.y = y;
+    constructor(scene: Phaser.Scene, sliderData: Record<string, any>, hitSound: Sound) {
+        super();
+        const displayX = Math.floor((sliderData.position[0] / 640) * scene.viewWidth);
+        const displayY = Math.floor((sliderData.position[1] / 480) * scene.viewHeight);
+
+        this.x = displayX;
+        this.y = displayY;
 
         this.alpha = 0;
         this.active = false;
 
-        this.sceneSound = scene.sound;
+        this.hitSound = hitSound;
         this.timingRadius = this.MAX_TIMING_RADIUS;
 
         const hitCircle = new Phaser.Geom.Circle(0, 0, this.HIT_RADIUS);
@@ -43,7 +48,7 @@ export default class Slider extends Hittable {
         this.hitGraphic = scene.add.graphics();
         this.hitGraphic.lineStyle(this.BORDER_WIDTH, 0xffffff);
         this.hitGraphic.strokeCircleShape(hitCircle);
-        this.hitGraphic.fillStyle(0x112288, 1);
+        this.hitGraphic.fillStyle(0x882211, 1);
         this.hitGraphic.fillCircleShape(hitCircle);
 
         // Add listeners to clickable circle
@@ -52,8 +57,8 @@ export default class Slider extends Hittable {
 
         // Group together timingGraphic and hitGraphic so they can be moved/adjusted together
         this.group = scene.add.group([this.timingGraphic, this.hitGraphic]);
-        this.group.setX(x);
-        this.group.setY(y);
+        this.group.setX(this.x);
+        this.group.setY(this.y);
         this.group.setAlpha(this.alpha);
     }
 
@@ -77,7 +82,7 @@ export default class Slider extends Hittable {
     }
 
     private onClick(): void {
-        this.sceneSounds.play('softHitclap');
+        this.hitSound.play();
     }
 
     private getTimingCircle(): Phaser.Geom.Circle {

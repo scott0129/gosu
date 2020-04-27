@@ -8,18 +8,18 @@ export default class HitCircle extends Hittable {
     private group: Phaser.GameObjects.Group;
     private hitGraphic: Phaser.GameObjects.Graphics;
     private timingGraphic: Phaser.GameObjects.Graphics;
-    private softHitclap: Phaser.Sound.BaseSound;
+    private hitSound: Phaser.Sound.BaseSound;
 
     public active: boolean;
     public alpha: number;
     public timingRadius: number;
 
-    constructor(scene: Phaser.Scene, x: number, y: number, softHitclap: Sound) {
+    constructor(scene: Phaser.Scene, x: number, y: number, hitSound: Sound) {
         super();
         this.x = x;
         this.y = y;
 
-        this.softHitclap = softHitclap;
+        this.hitSound = hitSound;
 
         this.alpha = 0;
         this.active = false;
@@ -46,8 +46,8 @@ export default class HitCircle extends Hittable {
 
         // Group together timingGraphic and hitGraphic so they can be moved/adjusted together
         this.group = scene.add.group([this.timingGraphic, this.hitGraphic]);
-        this.group.setX(x);
-        this.group.setY(y);
+        this.group.setX(this.x);
+        this.group.setY(this.y);
         this.group.setAlpha(this.alpha);
     }
 
@@ -71,8 +71,7 @@ export default class HitCircle extends Hittable {
     }
 
     private onClick(): void {
-        console.log(this);
-        this.softHitclap.play();
+        this.hitSound.play();
     }
 
     private getTimingCircle(): Phaser.Geom.Circle {

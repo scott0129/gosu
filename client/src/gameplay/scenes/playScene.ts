@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import HitCircle from './hitCircle';
+import Slider from './slider';
 
 export default class PlayScene extends Phaser.Scene {
     private gameElements: HitCircle[];
@@ -53,47 +54,72 @@ export default class PlayScene extends Phaser.Scene {
     }
 
     public preload(): void {
-        this.createCircle(200, 200);
-        this.createCircle(600, 400);
-
         const hitObjectTweens = [];
 
+        const AR = window.beatmap.ApproachRate;
+        const fadeIn = this.getFadeInDuration(AR);
+        const preempt = this.getPreemptDuration(AR);
+
         const hitObjects = window.beatmap.hitObjects
-        // for (let i = 0; i < 30; i++) {
         for (let i = 0; i < hitObjects.length; i++) {
             const hitObjectData = hitObjects[i];
+            if (hitObjectData.objectName === 'slider') {
 
-            const [x, y] = this.osuPixelToDisplayPixel(hitObjectData.position);
-            const hitCircle = this.createCircle(x, y);
+                const slider = this.createSlider(hitObjectData);
 
-            const AR = window.beatmap.ApproachRate;
-            const fadeIn = this.getFadeInDuration(AR);
-            const preempt = this.getPreemptDuration(AR);
+                hitObjectTweens.push(
+                {
+                    // Fade in
+                    targets: slider,
+                    onStart: slider.start,
+                    onStartScope: slider,
+                    alpha: 0.8,
+                    offset: hitObjectData.startTime - preempt,
+                    duration: fadeIn,
+                }, {
+                    // Shrink timing radius
+                    targets: slider,
+                    timingRadius: 0,
+                    offset: hitObjectData.startTime - preempt,
+                    duration: preempt,
+                }, {
+                    // Fade out
+                    targets: slider,
+                    onEnd: slider.done,
+                    onEndScope: slider,
+                    alpha: 0,
+                    offset: hitObjectData.startTime,
+                    duration: 500,
+                })
+            } else if (hitObjectData.objectName === 'circle') {
+                const [x, y] = this.osuPixelToDisplayPixel(hitObjectData.position);
+                const hitCircle = this.createCircle(x, y);
 
-            hitObjectTweens.push(
-            {
-                // Fade in
-                targets: hitCircle,
-                onStart: hitCircle.start,
-                onStartScope: hitCircle,
-                alpha: 0.8,
-                offset: hitObjectData.startTime - preempt,
-                duration: fadeIn,
-            }, {
-                // Shrink timing radius
-                targets: hitCircle,
-                timingRadius: 0,
-                offset: hitObjectData.startTime - preempt,
-                duration: preempt,
-            }, {
-                // Fade out
-                targets: hitCircle,
-                onEnd: hitCircle.done,
-                onEndScope: hitCircle,
-                alpha: 0,
-                offset: hitObjectData.startTime,
-                duration: 500,
-            })
+                hitObjectTweens.push(
+                {
+                    // Fade in
+                    targets: hitCircle,
+                    onStart: hitCircle.start,
+                    onStartScope: hitCircle,
+                    alpha: 0.8,
+                    offset: hitObjectData.startTime - preempt,
+                    duration: fadeIn,
+                }, {
+                    // Shrink timing radius
+                    targets: hitCircle,
+                    timingRadius: 0,
+                    offset: hitObjectData.startTime - preempt,
+                    duration: preempt,
+                }, {
+                    // Fade out
+                    targets: hitCircle,
+                    onEnd: hitCircle.done,
+                    onEndScope: hitCircle,
+                    alpha: 0,
+                    offset: hitObjectData.startTime,
+                    duration: 500,
+                })
+            }
         }
 
         this.timeline = this.tweens.timeline({
@@ -106,7 +132,6 @@ export default class PlayScene extends Phaser.Scene {
     }
 
     public create(): void {
-        // Whichever starts latest will be the one to sync
         this.timeline.play();
         this.music.play(); 
     }
@@ -114,15 +139,13 @@ export default class PlayScene extends Phaser.Scene {
     public update(): void {
         this.syncTimelineToMusic();
         for (let i = 0; i < this.gameElements.length; ++i) {
-            //TODO: This could probably be more efficient with events
-            this.gameElements[i].update();
+            this.gameElements[i].update();    //TODO: This could probably be more efficient with events
         }
     }
 
     // calling this constantly tries to sync 
     private syncTimelineToMusic(musicAheadBy: number): void {
         const musicAheadBy = this.music.seek - this.timeline.elapsed/1000;
-        console.log(musicAheadBy);
         this.timeline.setTimeScale(1 + musicAheadBy);
     }
 
@@ -130,5 +153,11 @@ export default class PlayScene extends Phaser.Scene {
         const hitCircle = new HitCircle(this, x, y, this.softHitclap);
         this.gameElements.push(hitCircle)
         return hitCircle;
+    }
+
+    private createSlider(parsedData: Object): void {
+        const slider = new Slider(this, parsedData, this.softHitclap);
+        this.gameElements.push(slider)
+        return slider;
     }
 }
