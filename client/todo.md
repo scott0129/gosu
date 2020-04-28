@@ -11,6 +11,7 @@
 
 ### Naming
  - Rename 'beatmapMetadata' to 'beatmapInfo'
+ - Rename 'viewWidth' to 'sceneWidth'
 
 ### Potential bugs/errors
  - Timeline duration is set to only 5000
