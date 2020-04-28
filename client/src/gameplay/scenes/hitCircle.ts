@@ -12,8 +12,9 @@ export default class HitCircle extends Hittable {
     private hitSound: Phaser.Sound.BaseSound;
 
     private startTime: number;
+    private clicked: boolean;
 
-    public active: boolean;
+    // public active: boolean;
     public alpha: number;
     public timingRadius: number;
 
@@ -25,9 +26,11 @@ export default class HitCircle extends Hittable {
         this.y = circleData.position[1];
 
         this.hitSound = hitSound;
+        this.startTime = circleData.startTime;
+        this.clicked = false;
 
         this.alpha = 0;
-        this.active = false;
+        // this.active = false;
 
         this.timingRadius = this.MAX_TIMING_RADIUS;
 
@@ -57,17 +60,35 @@ export default class HitCircle extends Hittable {
     }
 
     start(): void {
-        this.active = true;
+        // this.active = true;
     }
 
     done(): void{
+        // this.update();
+        if (!this.clicked) {
+            const feedbackGraphic = this.scene.add.text(this.x, this.y, 'MISSED', {
+                fontFamily: 'Trebuchet MS',
+                fontSize: '32px',
+                color: '#F77',
+            });
+            feedbackGraphic.setOrigin(0.5, 0.5);
+            this.scene.tweens.add({
+                targets: feedbackGraphic,
+                alpha: 0,
+                duration: 1000,
+                onUpdate: (tween, target) => {
+                    target.setAlpha(target.alpha);
+                },
+            })
+        }
         this.active = false;
     }
 
     update(): void {
-        if (!this.active) {
-            return;
-        }
+        // This was what (I thought) an optimization, but looks like tweens takes cares of it.
+        // if (!this.active) {
+        //     return;
+        // }
         this.group.setAlpha(this.alpha);
 
         this.timingGraphic.clear();
@@ -76,18 +97,32 @@ export default class HitCircle extends Hittable {
     }
 
     private onClick(): void {
+        const now = this.scene.timeline.totalElapsed;
         this.hitGraphic.disableInteractive();
         this.hitSound.play();
+        this.clicked = true;
         
-        const feedback = "Hello!";
-        const feedbackGraphic = this.scene.add.text(this.x, this.y, feedback);
-        console.log(this.scene.timeline.totalElapsed);
+        const clickTimeDiff = now - this.startTime;
+        let timingText = 'PERFECT';
+        let textColor = '#7F7';
+        if (clickTimeDiff > 20) {
+            timingText = 'LATE';
+            textColor = '#F77';
+        } else if (clickTimeDiff < -20) {
+            timingText = 'EARLY';
+            textColor = '#7FF';
+        }
+        const feedbackGraphic = this.scene.add.text(this.x, this.y, timingText, {
+            fontFamily: 'Trebuchet MS',
+            fontSize: '32px',
+            color: textColor,
+        });
+        feedbackGraphic.setOrigin(0.5, 0.5);
         this.scene.tweens.add({
             targets: feedbackGraphic,
             alpha: 0,
             duration: 1000,
             onUpdate: (tween, target) => {
-                console.log(target.alpha);
                 target.setAlpha(target.alpha);
             },
         })

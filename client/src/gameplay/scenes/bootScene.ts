@@ -1,5 +1,4 @@
 export default class BootScene extends Phaser.Scene {
-
     private musicStream: Stream;
     private musicLoaded: boolean;
 
@@ -20,12 +19,12 @@ export default class BootScene extends Phaser.Scene {
 
         // this.load.binary('music', this.musicStream);
         this.sound.decodeAudio('music', this.musicStream);
-        this.sound.addListener('decodedall', () => this.musicLoaded = true)
+        this.sound.addListener('decodedall', () => (this.musicLoaded = true));
 
-        this.load.audio(
-            'softHitclap',
-            require('../../assets/audio/soft-hitclap.wav')
-        );
+        this.load.audio('normal', require('../../assets/audio/normal.wav'));
+        this.load.audio('whistle', require('../../assets/audio/whistle.wav'));
+        this.load.audio('clap', require('../../assets/audio/clap.wav'));
+        this.load.audio('finish', require('../../assets/audio/finish.wav'));
 
         this.load.on('progress', function (progress) {
             bar.setScale(progress, 1);
@@ -62,7 +61,9 @@ export default class BootScene extends Phaser.Scene {
     }
 
     public update(): void {
-        if (!this.musicLoaded) { return; }
+        if (!this.musicLoaded) {
+            return;
+        }
         this.scene.start('menu');
     }
 }

@@ -8,7 +8,6 @@ export default class PlayScene extends Phaser.Scene {
     private viewWidth: number;
     private viewHeight: number;
     private timeline: Timeline;
-    private softHitclap: Sound;
     private music: Sound;
 
     constructor() {
@@ -24,7 +23,12 @@ export default class PlayScene extends Phaser.Scene {
         img.setOrigin(0, 0);
         img.displayWidth = this.viewWidth;
         img.displayHeight = this.viewHeight;
-        this.softHitclap = this.sound.add('softHitclap');
+
+        this.hitNormal = this.sound.add('normal');
+        this.hitWhistle = this.sound.add('whistle');
+        this.hitClap = this.sound.add('clap');
+        this.hitFinish = this.sound.add('finish');
+
         this.music = this.sound.add('music');
     }
 
@@ -61,7 +65,7 @@ export default class PlayScene extends Phaser.Scene {
         const preempt = this.getPreemptDuration(AR);
 
         const hitObjects = window.beatmap.hitObjects;
-        for (let i = 0; i < hitObjects.length; i++) {
+        for (let i = hitObjects.length - 1; i >= 0; --i) {
             const hitObjectData = hitObjects[i];
             if ( hitObjectData.objectName === 'slider') {
                 for (let j = 0; j < hitObjectData.points.length; j++) {
@@ -133,8 +137,8 @@ export default class PlayScene extends Phaser.Scene {
                     {
                         // Fade out
                         targets: hitCircle,
-                        onEnd: hitCircle.done,
-                        onEndScope: hitCircle,
+                        onComplete: hitCircle.done,
+                        onCompleteScope: hitCircle,
                         alpha: 0,
                         offset: hitObjectData.startTime,
                         duration: 500,
@@ -170,14 +174,31 @@ export default class PlayScene extends Phaser.Scene {
         this.timeline.setTimeScale(1 + musicAheadBy);
     }
 
+    private getAudio(soundName: string) {
+        switch (soundName) {
+            case 'normal':
+                return this.hitNormal;
+            case 'whistle':
+                return this.hitWhistle;
+            case 'clap':
+                return this.hitClap;
+            case 'finish':
+                return this.hitFinish;
+        }
+    }
+
     private createCircle(parsedData: Object): void {
-        const hitCircle = new HitCircle(this, parsedData, this.softHitclap);
+        // I don't know what it means for there to be multiple soundtypes, so just take the first
+        const soundName = parsedData.soundTypes[0]
+        const hitCircle = new HitCircle(this, parsedData, this.getAudio(soundName));
         this.gameElements.push(hitCircle);
         return hitCircle;
     }
 
     private createSlider(parsedData: Object): void {
-        const slider = new Slider(this, parsedData, this.softHitclap);
+        // I don't know what it means for there to be multiple soundtypes, so just take the first
+        const soundName = parsedData.soundTypes[0]
+        const slider = new Slider(this, parsedData, this.getAudio(soundName));
         this.gameElements.push(slider);
         return slider;
     }
