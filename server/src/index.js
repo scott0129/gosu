@@ -32,7 +32,7 @@ const client = new MongoClient(env.ATLAS_URI, {
 let users = null;
 client.connect(err => {
     if (err) {
-        console.log("Could not connect to mongoDB:", "err");
+        console.log("Could not connect to mongoDB:", err);
     }
     users = client.db("gosuAuth").collection("users");
 

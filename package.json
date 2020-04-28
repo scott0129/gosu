@@ -7,7 +7,7 @@
   "author": "Scott Kim <scottk3@illinois.edu>",
   "license": "MIT",
   "scripts": {
-    "build": "parcel build client/src/index.html --public-url ./",
+    "build": "parcel build client/src/index.html --public-url ./ --out-dir client/dist",
     "start": "node server/src/index.js"
   },
   "dependencies": {
