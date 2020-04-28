@@ -63,17 +63,10 @@ export default class PlayScene extends Phaser.Scene {
         const hitObjects = window.beatmap.hitObjects;
         for (let i = 0; i < hitObjects.length; i++) {
             const hitObjectData = hitObjects[i];
-            if (
-                hitObjectData.objectName === 'slider' &&
-                hitObjectData.curveType === 'pass-through'
-            ) {
-                for (
-                    let pointIdx = 0;
-                    pointIdx < hitObjectData.points.length;
-                    pointIdx++
-                ) {
-                    hitObjectData.points[pointIdx] = this.osuPixelToDisplayPixel(
-                        hitObjectData.points[pointIdx]
+            if ( hitObjectData.objectName === 'slider') {
+                for (let j = 0; j < hitObjectData.points.length; j++) {
+                    hitObjectData.points[j] = this.osuPixelToDisplayPixel(
+                        hitObjectData.points[j]
                     );
                 }
 

@@ -39,7 +39,9 @@ export default class Slider extends Hittable {
         this.sceneHeight = scene.viewHeight;
 
         if (sliderData.curveType === 'bezier') {
+            this.curve = this.getBezierCurve(sliderData);
         } else if (sliderData.curveType === 'linear') {
+            this.curve = this.getLinearCurve(sliderData);
         } else if (sliderData.curveType === 'pass-through') {
             this.curve = this.getCircleCurve(sliderData);
         }
@@ -117,6 +119,26 @@ export default class Slider extends Hittable {
         this.timingGraphic.setY(vector.y);
         this.timingGraphic.lineStyle(this.BORDER_WIDTH, 0xabcede);
         this.timingGraphic.strokeCircleShape(this.getTimingCircle());
+    }
+
+    private getLinearCurve(
+        sliderData: Record<string, any>
+    ): Phaser.Curves.Path {
+        const path = new Phaser.Curves.Path();
+        for (let i = 0; i < sliderData.points.length - 1; i++) {
+            const startPoint = sliderData.points[i];
+            const endPoint = sliderData.points[i + 1];
+            path.add(new Phaser.Curves.Line([...startPoint, ...endPoint]));
+        }
+        return path;
+    }
+
+    private getBezierCurve(
+        sliderData: Record<string, any>
+    ): Phaser.Curves.Bezier {
+        // PHASER 3 doesn't support aribtrary degree bezier curves or b-splines. So we use a bad spline :(
+        const spline = new Phaser.Curves.Spline(sliderData.points);
+        return spline;
     }
 
     private getCircleCurve(
