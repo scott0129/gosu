@@ -17,6 +17,7 @@ describe('music manager behavior', () => {
             title: 'Ave Maria',
             preview_url: 'example.com/1',
             set_id: 11,
+            creator: 'Scott Kim',
             version: 'The good one',
         },
         {
@@ -25,6 +26,7 @@ describe('music manager behavior', () => {
             title: 'Fur Elise',
             preview_url: 'example.com/2',
             set_id: 12,
+            creator: 'Scooter Kom',
             version: 'The ok one',
         },
     ];

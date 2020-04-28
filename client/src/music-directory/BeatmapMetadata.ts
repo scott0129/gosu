@@ -1,10 +1,10 @@
 interface BeatmapMetadata {
-    artist: string,
     beatmap_id: number,
-    preview_url: string,
-    creator: string,
-    set_id: number,
+    artist: string,
     title: string,
+    preview_url: string,
+    set_id: number,
+    creator: string,
     version: string,
 }
 
