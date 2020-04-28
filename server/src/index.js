@@ -4,14 +4,23 @@ const bodyParser = require("body-parser");
 const morgan = require("morgan");
 const passport = require("passport");
 const OAuth2Strategy = require("passport-oauth").OAuth2Strategy;
-const env = require(`${__dirname}/.env`);
 const session = require("express-session");
 const axios = require("axios");
 const MongoClient = require("mongodb").MongoClient;
 const request = require("request");
 const fs = require("fs");
 
+let env = process.env;
+try {
+    // We don't have .env on heroku
+    env = require(`${__dirname}/.env`);
+} catch (err) {
+    console.error(err);
+}
+
 const STATIC_DIR = `${__dirname}/../../client/dist`;
+
+const port = process.env.PORT || 4000;
 
 // setup ===========================================================================================
 
