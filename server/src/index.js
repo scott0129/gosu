@@ -4,14 +4,14 @@ const bodyParser = require("body-parser");
 const morgan = require("morgan");
 const passport = require("passport");
 const OAuth2Strategy = require("passport-oauth").OAuth2Strategy;
-const env = require("./.env");
+const env = require(`${__dirname}/.env`);
 const session = require("express-session");
 const axios = require("axios");
 const MongoClient = require("mongodb").MongoClient;
 const request = require("request");
 const fs = require("fs");
 
-const STATIC_DIR = "../client/dist";
+const STATIC_DIR = `${__dirname}/../../client/dist`;
 
 // setup ===========================================================================================
 

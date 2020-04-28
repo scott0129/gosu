@@ -1,21 +1,15 @@
 {
-  "name": "phaser-parcel",
+  "name": "gosu",
   "version": "1.0.0",
-  "description": "A Phaser 3 game template using Parcel bundler",
-  "main": "src/index.html",
+  "description": "yet another web osu! client",
+  "main": "server/src/index.js",
+  "repository": "https://github.com/scott0129/gosu.git",
+  "author": "Scott Kim <scottk3@illinois.edu>",
+  "license": "MIT",
   "scripts": {
-    "test": "jest",
     "build": "parcel build client/src/index.html --public-url ./",
-    "start": "node server/src/index.html",
-    "clean": "rm -v dist/*"
+    "start": "node server/src/index.js"
   },
-  "keywords": [
-    "phaser",
-    "phaser3",
-    "phaser-boilerplate"
-  ],
-  "author": "samme",
-  "license": "ISC",
   "dependencies": {
     "axios": "^0.19.2",
     "body-parser": "^1.19.0",
