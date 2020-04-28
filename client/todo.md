@@ -16,3 +16,5 @@
 ### Potential bugs/errors
  - Timeline duration is set to only 5000
 
+### Optimizations
+ - Destroy objects (sliders/hitcircles) when their tween ends?

@@ -5,6 +5,7 @@ export default class HitCircle extends Hittable {
     private x: number;
     private y: number;
 
+    private scene: Phaser.Scene;
     private group: Phaser.GameObjects.Group;
     private hitGraphic: Phaser.GameObjects.Graphics;
     private timingGraphic: Phaser.GameObjects.Graphics;
@@ -16,6 +17,8 @@ export default class HitCircle extends Hittable {
 
     constructor(scene: Phaser.Scene, x: number, y: number, hitSound: Sound) {
         super();
+        this.scene = scene;
+
         this.x = x;
         this.y = y;
 
@@ -71,7 +74,21 @@ export default class HitCircle extends Hittable {
     }
 
     private onClick(): void {
+        this.hitGraphic.disableInteractive();
         this.hitSound.play();
+        
+        const feedback = "Hello!";
+        const feedbackGraphic = this.scene.add.text(this.x, this.y, feedback);
+        console.log(this.scene.timeline.totalElapsed);
+        this.scene.tweens.add({
+            targets: feedbackGraphic,
+            alpha: 0,
+            duration: 500,
+            onUpdate: (tween, target) => {
+                console.log(target.alpha);
+                target.setAlpha(target.alpha);
+            },
+        })
     }
 
     private getTimingCircle(): Phaser.Geom.Circle {
