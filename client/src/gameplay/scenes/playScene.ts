@@ -63,7 +63,7 @@ export default class PlayScene extends Phaser.Scene {
         const hitObjects = window.beatmap.hitObjects
         for (let i = 0; i < hitObjects.length; i++) {
             const hitObjectData = hitObjects[i];
-            if (hitObjectData.objectName === 'slider') {
+            if (hitObjectData.objectName === 'slider' && hitObjectData.curveType === 'pass-through') {
 
                 const slider = this.createSlider(hitObjectData);
 
@@ -82,6 +82,12 @@ export default class PlayScene extends Phaser.Scene {
                     timingRadius: 0,
                     offset: hitObjectData.startTime - preempt,
                     duration: preempt,
+                }, {
+                    // MooOOooOove the slider
+                    targets: slider,
+                    progress: 1,
+                    offset: hitObjectData.startTime,
+                    duration: hitObjectData.duration,
                 }, {
                     // Fade out
                     targets: slider,
