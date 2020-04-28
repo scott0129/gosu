@@ -64,7 +64,7 @@ passport.use(
             tokenURL: "https://osu.ppy.sh/oauth/token",
             clientID: env.CLIENT_ID,
             clientSecret: env.CLIENT_SECRET,
-            callbackURL: "http://localhost:4000/login/callback",
+            callbackURL: "https://jankosu.herokuapp.com/login/callback",
             scope: "identify users.read",
             state: true
         },
