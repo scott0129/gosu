@@ -14,8 +14,6 @@ export default class Slider extends Hittable {
     public alpha: number;
     public timingRadius: number;
     private curve: Curve;
-    private sceneWidth: number;
-    private sceneHeight: number;
 
     /* Progress through the curve [0..1] */
     public progress: number;
@@ -35,8 +33,6 @@ export default class Slider extends Hittable {
         hitSound: Sound
     ) {
         super();
-        this.sceneWidth = scene.viewWidth;
-        this.sceneHeight = scene.viewHeight;
 
         if (sliderData.curveType === 'bezier') {
             this.curve = this.getBezierCurve(sliderData);

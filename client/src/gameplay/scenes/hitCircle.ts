@@ -11,16 +11,18 @@ export default class HitCircle extends Hittable {
     private timingGraphic: Phaser.GameObjects.Graphics;
     private hitSound: Phaser.Sound.BaseSound;
 
+    private startTime: number;
+
     public active: boolean;
     public alpha: number;
     public timingRadius: number;
 
-    constructor(scene: Phaser.Scene, x: number, y: number, hitSound: Sound) {
+    constructor(scene: Phaser.Scene, circleData: Record<string, any>, hitSound: Sound) {
         super();
         this.scene = scene;
 
-        this.x = x;
-        this.y = y;
+        this.x = circleData.position[0];
+        this.y = circleData.position[1];
 
         this.hitSound = hitSound;
 
@@ -83,7 +85,7 @@ export default class HitCircle extends Hittable {
         this.scene.tweens.add({
             targets: feedbackGraphic,
             alpha: 0,
-            duration: 500,
+            duration: 1000,
             onUpdate: (tween, target) => {
                 console.log(target.alpha);
                 target.setAlpha(target.alpha);

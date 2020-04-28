@@ -108,10 +108,10 @@ export default class PlayScene extends Phaser.Scene {
                     }
                 );
             } else if (hitObjectData.objectName === 'circle') {
-                const [x, y] = this.osuPixelToDisplayPixel(
+                hitObjectData.position = this.osuPixelToDisplayPixel(
                     hitObjectData.position
                 );
-                const hitCircle = this.createCircle(x, y);
+                const hitCircle = this.createCircle(hitObjectData);
 
                 hitObjectTweens.push(
                     {
@@ -170,8 +170,8 @@ export default class PlayScene extends Phaser.Scene {
         this.timeline.setTimeScale(1 + musicAheadBy);
     }
 
-    private createCircle(x: number, y: number): void {
-        const hitCircle = new HitCircle(this, x, y, this.softHitclap);
+    private createCircle(parsedData: Object): void {
+        const hitCircle = new HitCircle(this, parsedData, this.softHitclap);
         this.gameElements.push(hitCircle);
         return hitCircle;
     }
