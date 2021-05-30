@@ -29,7 +29,7 @@
     "vue": "^2.6.11",
     "vue-cookies": "^1.7.0",
     "vue-hot-reload-api": "^2.3.4",
-    "ws": "^7.2.3"
+    "ws": "^7.4.6"
   },
   "devDependencies": {
     "@babel/core": "^7.9.0",
